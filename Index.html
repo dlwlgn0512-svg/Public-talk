@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회중 공개강연 계획표 및 이력 관리</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #0284c7;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.5; padding: 20px; }
+    .container { max-width: 1240px; margin: 0 auto; }
+
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid var(--border); }
+    h1 { font-size: 1.6rem; font-weight: 700; color: #0f172a; }
+    .header-actions { display: flex; gap: 8px; }
+
+    button { cursor: pointer; padding: 8px 14px; border-radius: 6px; border: 1px solid transparent; font-weight: 600; font-size: 0.88rem; transition: 0.15s ease-in-out; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-primary { background-color: var(--primary); color: #fff; }
+    .btn-primary:hover { background-color: var(--primary-dark); }
+    .btn-outline { background-color: #fff; border-color: var(--border); color: var(--text); }
+    .btn-outline:hover { background-color: #f1f5f9; }
+    .btn-print { background-color: #0f172a; color: #fff; }
+    .btn-print:hover { background-color: #334155; }
+    .btn-danger { background-color: #fee2e2; color: #b91c1c; border-color: #fecaca; }
+    .btn-danger:hover { background-color: #fca5a5; }
+
+    .nav-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+    .tab-btn { padding: 10px 18px; border: none; background: none; font-size: 0.95rem; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid transparent; border-radius: 0; }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    
+    .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .form-group-inline { display: flex; align-items: center; gap: 8px; }
+    input, select, textarea { padding: 7px 11px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; outline: none; }
+    input:focus, select:focus { border-color: var(--primary); ring: 2px rgba(37,99,235,0.2); }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background-color: #f8fafc; font-weight: 600; color: #475569; }
+    tr:hover { background-color: #f8fafc; }
+
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+    .badge-invited { background-color: #dbeafe; color: #1e40af; }
+    .badge-local { background-color: #dcfce7; color: #166534; }
+    .badge-outgoing { background-color: #fef3c7; color: #92400e; }
+    .badge-special { background-color: #f3e8ff; color: #6b21a8; }
+
+    /* 모달 */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-backdrop.show { display: flex; }
+    .modal { background: #fff; width: 90%; max-width: 720px; max-height: 85vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+    .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .modal-body { padding: 20px; overflow-y: auto; }
+    .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+
+    .talk-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    .talk-item { padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .talk-item:hover { background: #eff6ff; border-color: var(--primary); }
+    .talk-no { font-weight: 700; color: var(--primary); min-width: 50px; }
+
+    /* A4 가로 인쇄 서식 */
+    @media print {
+      @page { size: A4 landscape; margin: 10mm; }
+      body { background: #fff; padding: 0; color: #000; }
+      header, .nav-tabs, .toolbar, .no-print, button, .action-cell { display: none !important; }
+      .container { max-width: 100%; margin: 0; }
+      .card { border: none; padding: 0; box-shadow: none; }
+      .print-header { display: block !important; text-align: center; margin-bottom: 15px; }
+      .print-header h2 { font-size: 1.5rem; margin-bottom: 4px; }
+      .print-header p { font-size: 0.85rem; color: #333; }
+      table { border: 1.5px solid #000; font-size: 0.82rem; }
+      th, td { border: 1px solid #444 !important; padding: 6px 8px; color: #000; }
+      th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .month-divider { background-color: #e2e8f0 !important; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .badge { border: 1px solid #666; color: #000 !important; background: transparent !important; }
+    }
+    .print-header { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- 상단 헤더 -->
+  <header>
+    <div>
+      <h1>회중 공개강연 계획표 및 연제 관리</h1>
+      <p style="font-size:0.88rem; color:var(--text-muted); margin-top:2px;">4개월치 계획표 작성, 연제 1~194번 즉각 검색 및 A4 출력 시스템</p>
+    </div>
+    <div class="header-actions no-print">
+      <button class="btn-outline" onclick="openTalkPickerModal()">📖 1~194번 연제 전체보기</button>
+      <button class="btn-print" onclick="window.print()">🖨️ 계획표 인쇄 / PDF 저장</button>
+      <button class="btn-outline" onclick="exportData()">💾 백업(JSON)</button>
+      <button class="btn-outline" onclick="document.getElementById('importFile').click()">📂 불러오기</button>
+      <input type="file" id="importFile" style="display:none" onchange="importData(event)">
+    </div>
+  </header>
+
+  <!-- 인쇄 전용 헤더 -->
+  <div class="print-header">
+    <h2 id="printTitle">회중 공개강연 계획표</h2>
+    <p id="printPeriod">기간: 4개월 계획표</p>
+  </div>
+
+  <!-- 탭 메뉴 -->
+  <div class="nav-tabs no-print">
+    <button class="tab-btn active" onclick="switchTab('scheduleTab')">📅 4개월 계획표</button>
+    <button class="tab-btn" onclick="switchTab('historyTab')">🔍 연제 및 연사 이력 검색</button>
+  </div>
+
+  <!-- 탭 1: 4개월 계획표 -->
+  <div id="scheduleTab" class="tab-content">
+    <div class="card no-print">
+      <div class="toolbar">
+        <div class="form-group-inline">
+          <label><strong>시작 연월:</strong></label>
+          <input type="month" id="scheduleStartMonth" value="2026-11">
+          <label><strong>집회 요일:</strong></label>
+          <select id="meetingDay">
+            <option value="0">일요일</option>
+            <option value="6">토요일</option>
+          </select>
+          <button class="btn-outline" onclick="generate4MonthsSlots()">⚡ 4개월 빈 슬롯 자동 생성</button>
+        </div>
+        <div>
+          <button class="btn-primary" onclick="openScheduleModal()">+ 강연 일정 추가</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <table id="scheduleTable">
+        <thead>
+          <tr>
+            <th style="width: 105px;">일자</th>
+            <th style="width: 95px;">구분</th>
+            <th style="width: 70px;">연제번호</th>
+            <th>강연 제목</th>
+            <th style="width: 110px;">연사</th>
+            <th style="width: 120px;">소속 회중</th>
+            <th style="width: 90px;">사회자</th>
+            <th style="width: 90px;">낭독자</th>
+            <th class="action-cell" style="width: 110px;">관리</th>
+          </tr>
+        </thead>
+        <tbody id="scheduleBody">
+          <!-- 스크립트로 렌더링 -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 탭 2: 이력 검색 -->
+  <div id="historyTab" class="tab-content" style="display:none;">
+    <div class="card no-print">
+      <div class="toolbar">
+        <div style="flex:1; display:flex; gap:10px;">
+          <input type="text" id="searchKeyword" placeholder="연제 번호, 제목, 연사 성명, 회중명 검색..." style="flex:1;" oninput="filterHistory()">
+          <select id="filterCategory" onchange="filterHistory()">
+            <option value="">모든 구분</option>
+            <option value="초대 연사">초대 연사</option>
+            <option value="자체 연사">자체 연사</option>
+            <option value="외부 파견">외부 파견</option>
+            <option value="대회/특별">대회/특별</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <table id="historyTable">
+        <thead>
+          <tr>
+            <th style="width: 110px;">제공 일자</th>
+            <th style="width: 95px;">구분</th>
+            <th style="width: 70px;">연제번호</th>
+            <th>강연 제목</th>
+            <th style="width: 120px;">연사</th>
+            <th style="width: 140px;">소속 회중</th>
+            <th>비고 (식사/사회자 등)</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody">
+          <!-- 스크립트로 렌더링 -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 일정 등록/수정 모달 -->
+<div class="modal-backdrop" id="scheduleModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">강연 일정 등록</h3>
+      <button style="border:none; background:none; font-size:1.2rem;" onclick="closeModal('scheduleModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="scheduleForm" onsubmit="saveSchedule(event)">
+        <input type="hidden" id="editIndex" value="-1">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div>
+            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">일자 *</label>
+            <input type="date" id="formDate" required style="width:100%;">
+          </div>
+          <div>
+            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">구분</label>
+            <select id="formType" style="width:100%;">
+              <option value="초대 연사">초대 연사 (방문)</option>
+              <option value="자체 연사">자체 연사</option>
+              <option value="외부 파견">외부 파견 (출타)</option>
+              <option value="대회/특별">순회대회/지역대회/특별집회</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <label style="font-size:0.82rem; font-weight:600;">연제 번호 및 제목</label>
+            <button type="button" class="btn-outline" style="padding:2px 8px; font-size:0.75rem;" onclick="openTalkPickerForForm()">📖 목록에서 연제 선택</button>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <input type="number" id="formTalkNo" placeholder="번호 (1~194)" style="width:130px;" oninput="onTalkNoInput(this.value)">
+            <input type="text" id="formTalkTitle" placeholder="강연 제목" style="flex:1;" required>
+          </div>
+          <div id="duplicateWarning" style="color:var(--danger); font-size:0.8rem; margin-top:4px; display:none;"></div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div>
+            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">연사 성명</label>
+            <input type="text" id="formSpeaker" placeholder="형제명" style="width:100%;">
+          </div>
+          <div>
+            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">소속 회중</label>
+            <input type="text" id="formCongregation" placeholder="예: 대구동부 회중" style="width:100%;">
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div>
+            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">집회 사회자</label>
+            <input type="text" id="formChairman" placeholder="사회 형제" style="width:100%;">
+          </div>
+          <div>
+            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">파수대 낭독자</label>
+            <input type="text" id="formReader" placeholder="낭독 형제" style="width:100%;">
+          </div>
+        </div>
+
+        <div>
+          <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">비고 / 식사 대접 / 안내 사항</label>
+          <input type="text" id="formNotes" placeholder="식사 대접 가정, 교통편 등" style="width:100%;">
+        </div>
+
+        <div class="modal-footer" style="padding-right:0; padding-bottom:0; margin-top:16px;">
+          <button type="button" class="btn-outline" onclick="closeModal('scheduleModal')">취소</button>
+          <button type="submit" class="btn-primary">저장하기</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 1~194번 연제 전체보기 & 선택 모달 -->
+<div class="modal-backdrop" id="talkPickerModal">
+  <div class="modal" style="max-width:800px;">
+    <div class="modal-header">
+      <h3>공개강연 연제 데이터베이스 (1번~194번)</h3>
+      <button style="border:none; background:none; font-size:1.2rem;" onclick="closeModal('talkPickerModal')">✕</button>
+    </div>
+    <div style="padding:12px 20px; border-bottom:1px solid var(--border);">
+      <input type="text" id="talkSearchInput" placeholder="연제 번호 또는 단어 검색 (예: 가정, 평화, 35, 부활)..." style="width:100%;"
