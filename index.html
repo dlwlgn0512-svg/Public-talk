@@ -21,11 +21,12 @@
       --accent: #0284c7;
       --success: #10b981;
       --danger: #ef4444;
-      --header-green: #bbf7d0; 
-      --header-green-dark: #14532d;
+      --header-green: #e8f5e9; 
+      --header-green-border: #a5d6a7;
+      --header-green-dark: #1b5e20;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; word-break: keep-all; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; word-break: keep-all; }
     body { background-color: var(--bg); color: var(--text); line-height: 1.4; padding: 12px; }
     .container { max-width: 1280px; margin: 0 auto; position: relative; z-index: 1; }
 
@@ -55,7 +56,6 @@
     .btn-danger { background-color: #fee2e2; color: #b91c1c; border-color: #fecaca; }
     .btn-danger:hover { background-color: #fca5a5; }
 
-    /* 네비게이션 탭 (3개 탭 구성) */
     .nav-tabs { display: flex; gap: 6px; margin-bottom: 14px; border-bottom: 1px solid var(--border); overflow-x: auto; }
     .tab-btn { padding: 9px 14px; border: none; background: none; font-size: 0.88rem; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid transparent; border-radius: 0; white-space: nowrap; }
     .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 700; }
@@ -69,7 +69,7 @@
     input, select { padding: 6px 9px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.86rem; outline: none; }
     input:focus, select:focus { border-color: var(--primary); }
 
-    /* 모바일 전용 카드 뷰 */
+    /* 모바일 카드 뷰 */
     .mobile-cards { display: flex; flex-direction: column; gap: 10px; }
     .schedule-card {
       background: #fff;
@@ -96,16 +96,8 @@
       align-items: center;
       gap: 5px;
     }
-    .schedule-card .card-talk {
-      font-size: 0.92rem;
-      font-weight: 600;
-      color: #1e293b;
-      margin: 2px 0;
-    }
-    .schedule-card .card-speaker {
-      font-size: 0.84rem;
-      color: #475569;
-    }
+    .schedule-card .card-talk { font-size: 0.92rem; font-weight: 600; color: #1e293b; margin: 2px 0; }
+    .schedule-card .card-speaker { font-size: 0.84rem; color: #475569; }
     .schedule-card .card-duty {
       font-size: 0.8rem;
       color: var(--text-muted);
@@ -116,20 +108,15 @@
       flex-direction: column;
       gap: 2px;
     }
-    .schedule-card .card-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 6px;
-      padding-top: 4px;
-    }
+    .schedule-card .card-actions { display: flex; justify-content: flex-end; gap: 6px; padding-top: 4px; }
 
-    /* 테이블 스타일 (PC/태블릿 및 인쇄용) */
+    /* 일반 화면 테이블 */
     .table-container { display: none; width: 100%; overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 0.88rem; table-layout: fixed; }
     th, td { padding: 8px 9px; text-align: left; border-bottom: 1px solid var(--border); overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
     
     th { 
-      background-color: var(--header-green) !important; 
+      background-color: var(--header-green); 
       font-size: 0.92rem; 
       font-weight: 800; 
       color: var(--header-green-dark); 
@@ -173,67 +160,140 @@
     .talk-item:hover { background: #eff6ff; border-color: var(--primary); }
     .talk-no { font-weight: 700; color: var(--primary); min-width: 48px; }
 
-    /* A4 가로 1장 인쇄 최적화 */
+    /* =========================================================
+       ★ [인쇄 전용 스타일 리디자인: 깔끔하고 정갈한 서식] ★
+       ========================================================= */
+    .print-only-container { display: none; }
+
     @media print {
-      @page { size: A4 landscape; margin: 6mm 7mm; }
+      @page { 
+        size: A4 landscape; 
+        margin: 8mm 10mm 8mm 10mm; /* A4 가로 최적 마진 */
+      }
+      
       html, body { 
         background: #fff !important; 
         padding: 0 !important; 
         margin: 0 !important; 
-        color: #000 !important;
-        font-size: 8.3pt !important;
-        line-height: 1.15 !important;
-      }
-      header, .nav-tabs, .toolbar, .no-print, button, .action-cell, .mobile-cards { 
-        display: none !important; 
-      }
-      .table-container { display: block !important; }
-      .container { max-width: 100% !important; margin: 0 !important; width: 100% !important; }
-      .card { border: none !important; padding: 0 !important; box-shadow: none !important; }
-      
-      .print-header { 
-        display: flex !important; 
-        justify-content: space-between; 
-        align-items: flex-end; 
-        border-bottom: 2px solid #000; 
-        padding-bottom: 3px; 
-        margin-bottom: 5px; 
-      }
-      .print-header h2 { font-size: 1.25rem !important; font-weight: 800; }
-      .print-header p { font-size: 8pt !important; color: #333; }
-
-      table { 
-        border: 1.5px solid #000 !important; 
-        table-layout: fixed !important; 
-        width: 100% !important;
-        page-break-inside: avoid !important;
-      }
-
-      th { 
-        background-color: #bbf7d0 !important; 
+        color: #111 !important;
+        font-size: 8.4pt !important;
+        line-height: 1.2 !important;
         -webkit-print-color-adjust: exact !important; 
         print-color-adjust: exact !important;
-        font-size: 9.6pt !important;
-        font-weight: 900 !important;
-        color: #000 !important;
-        border: 1px solid #222 !important;
-        padding: 5px 2px !important;
+      }
+
+      /* 웹 UI, 버튼, 관리 탭, 모바일 카드 완전 숨김 */
+      header, .nav-tabs, .toolbar, .no-print, button, .action-cell, .mobile-cards, #managementTab, #historyTab, .tab-content { 
+        display: none !important; 
+      }
+
+      /* 인쇄 전용 컨테이너만 명확히 노출 */
+      .print-only-container { 
+        display: block !important; 
+        width: 100% !important; 
+      }
+
+      /* 세련된 상단 공문서 헤더 */
+      .print-header-box {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: flex-end !important;
+        border-bottom: 2px solid #2e7d32 !important;
+        padding-bottom: 6px !important;
+        margin-bottom: 8px !important;
+      }
+      .print-header-box h2 {
+        font-size: 1.45rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 2px !important;
+        color: #1b5e20 !important;
+      }
+      .print-meta-badge {
+        font-size: 8.5pt !important;
+        font-weight: 600 !important;
+        color: #333 !important;
+        background: #f1f8e9 !important;
+        border: 1px solid #c8e6c9 !important;
+        padding: 3px 8px !important;
+        border-radius: 4px !important;
+      }
+
+      /* 인쇄용 고품격 테이블 서식 */
+      .print-table { 
+        width: 100% !important;
+        border-collapse: collapse !important;
+        table-layout: fixed !important;
+        border-top: 1.5px solid #2e7d32 !important;
+        border-bottom: 1.5px solid #2e7d32 !important;
+      }
+
+      /* 산뜻한 연두색 헤더 (크고 굵은 서체) */
+      .print-table th { 
+        background-color: #e8f5e9 !important; 
+        color: #1b5e20 !important;
+        font-size: 9.8pt !important;
+        font-weight: 800 !important;
+        text-align: center !important;
+        border: 1px solid #c8e6c9 !important;
+        border-bottom: 2px solid #81c784 !important;
+        padding: 6px 3px !important;
         white-space: nowrap !important;
       }
 
-      td { 
-        border: 1px solid #333 !important; 
-        padding: 4.5px 5px !important;
-        color: #000 !important; 
+      /* 정갈한 본문 셀 (미세한 라이트 그레이 라인) */
+      .print-table td { 
+        border: 1px solid #e0e0e0 !important; 
+        padding: 4.8px 5px !important;
+        color: #212121 !important; 
         vertical-align: middle !important;
         white-space: normal !important;
       }
 
-      .date-cell { white-space: nowrap !important; font-size: 8.2pt !important; letter-spacing: -0.4px !important; }
-      .month-divider { display: none !important; }
-      .badge-special { border: 1px solid #000 !important; background: transparent !important; color: #000 !important; font-size: 6.8pt !important; padding: 0 2px !important; }
+      /* 짝수 행 은은한 배경 구분 (시각적 피로도 감소) */
+      .print-table tr:nth-child(even) td {
+        background-color: #fafafa !important;
+      }
+
+      .print-table td.center { text-align: center !important; }
+      
+      .print-table .date-col { 
+        font-weight: 700 !important;
+        font-size: 8.3pt !important;
+        color: #263238 !important;
+        white-space: nowrap !important;
+        letter-spacing: -0.2px !important;
+      }
+
+      .print-table .talk-no-col {
+        font-weight: 800 !important;
+        color: #1565c0 !important;
+      }
+
+      .print-table .title-col {
+        font-weight: 600 !important;
+        color: #111 !important;
+        text-align: left !important;
+        padding-left: 8px !important;
+      }
+
+      /* 빈칸(-) 기호 투명화 (공백 처리하여 정돈된 인상 제공) */
+      .print-table .empty-cell {
+        color: transparent !important;
+      }
+
+      /* 특별 일정 라벨 (순회방문 등) */
+      .print-badge-special { 
+        display: inline-block !important;
+        border: 1px solid #d97706 !important; 
+        background: #fffbeb !important; 
+        color: #b45309 !important; 
+        font-size: 6.8pt !important; 
+        font-weight: 700 !important;
+        padding: 0 3px !important;
+        border-radius: 3px !important;
+        margin-left: 3px !important;
+      }
     }
-    .print-header { display: none; }
   </style>
 </head>
 <body>
@@ -249,15 +309,10 @@
     </div>
     <div class="header-actions no-print">
       <button type="button" class="btn-outline" onclick="openTalkPickerModal()">📖 1~194번 연제</button>
-      <button type="button" class="btn-print" onclick="window.print()">🖨️ A4 1장 인쇄/PDF</button>
+      <button type="button" class="btn-print" onclick="window.print()">🖨️ A4 계획표 인쇄 / PDF</button>
       <button type="button" class="btn-outline" onclick="exportData()">💾 백업</button>
     </div>
   </header>
-
-  <div class="print-header">
-    <h2>회중 공개강연 계획표</h2>
-    <p id="printPeriod">기간: 계획표</p>
-  </div>
 
   <!-- 상단 네비게이션 탭 -->
   <div class="nav-tabs no-print">
@@ -266,11 +321,34 @@
     <button type="button" class="tab-btn" onclick="switchTab('historyTab', event)">🔍 연제/연사 이력 검색</button>
   </div>
 
-  <!-- 탭 1: 연설 계획표 -->
+  <!-- =====================================================
+       [인쇄 전용 렌더링 영역 - 깔끔한 A4 가로 1장 전용]
+       ===================================================== -->
+  <div class="print-only-container">
+    <div class="print-header-box">
+      <h2>회중 공개강연 계획표</h2>
+      <div class="print-meta-badge" id="printPeriodBadge">계획 기간: -</div>
+    </div>
+    <table class="print-table">
+      <thead>
+        <tr>
+          <th style="width: 14%;">날짜</th>
+          <th style="width: 8%;">번호</th>
+          <th style="width: 10%;">연사</th>
+          <th style="width: 12%;">회중</th>
+          <th style="width: 36%;">연설주제</th>
+          <th style="width: 10%;">사회자</th>
+          <th style="width: 10%;">낭독자</th>
+        </tr>
+      </thead>
+      <tbody id="printTableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- 탭 1: 연설 계획표 (웹 전용) -->
   <div id="scheduleTab" class="tab-content">
     <div class="card no-print">
       <div class="toolbar">
-        <!-- 상단 날짜 및 기간 필터 설정 영역 -->
         <div class="form-group-inline">
           <label style="font-size:0.84rem;"><strong>조회 기간:</strong></label>
           <input type="month" id="filterStartMonth" onchange="renderSchedules()">
@@ -280,7 +358,6 @@
           <button type="button" class="btn-outline" style="padding:4px 9px; font-size:0.78rem;" onclick="showAllMonths()">전체 보기</button>
         </div>
 
-        <!-- 6개월 슬롯 자동 생성 및 추가 -->
         <div class="form-group-inline">
           <label style="font-size:0.84rem;"><strong>생성 시작:</strong></label>
           <input type="month" id="scheduleStartMonth">
@@ -299,8 +376,8 @@
       <div style="text-align:center; padding:30px; color:var(--text-muted);">불러오는 중...</div>
     </div>
 
-    <!-- 2) PC / 태블릿 / 인쇄 전용 테이블 -->
-    <div class="table-container card">
+    <!-- 2) PC / 태블릿 화면용 테이블 -->
+    <div class="table-container card no-print">
       <table id="scheduleTable">
         <thead>
           <tr>
@@ -321,7 +398,7 @@
     </div>
   </div>
 
-  <!-- 탭 2: 공개강연 관리 (신설 탭) -->
+  <!-- 탭 2: 공개강연 관리 (인쇄 대상 제외) -->
   <div id="managementTab" class="tab-content" style="display:none;">
     <div class="card no-print">
       <div class="toolbar">
@@ -338,11 +415,11 @@
       </div>
     </div>
 
-    <!-- 모바일 카드 뷰 (공개강연 관리 전용) -->
+    <!-- 모바일 카드 뷰 -->
     <div class="mobile-cards no-print" id="mobileMgmtCards"></div>
 
-    <!-- PC 테이블 (강연 번호, 이름, 회중, 강연주제, 연사 전화번호, 사회자, 초대자이름) -->
-    <div class="table-container card">
+    <!-- PC 테이블 -->
+    <div class="table-container card no-print">
       <table>
         <thead>
           <tr>
@@ -362,7 +439,7 @@
     </div>
   </div>
 
-  <!-- 탭 3: 연제/연사 이력 검색 -->
+  <!-- 탭 3: 연제/연사 이력 검색 (인쇄 대상 제외) -->
   <div id="historyTab" class="tab-content" style="display:none;">
     <div class="card no-print">
       <div class="toolbar">
@@ -383,7 +460,7 @@
 
     <div class="mobile-cards no-print" id="mobileHistoryCards"></div>
 
-    <div class="table-container card">
+    <div class="table-container card no-print">
       <table id="historyTable">
         <thead>
           <tr>
@@ -601,14 +678,10 @@
   let schedules = [];
   let pickerTargetIsForm = false;
 
-  // 기본 날짜 구간 계산: "지난달(-1개월) ~ 앞으로 5개월 (총 6개월)"
   function getInitialRange() {
     const now = new Date();
-    // 시작월: 지난달
     const startD = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    // 종료월: 앞으로 5개월 (시작월 포함 총 6개월)
     const endD = new Date(now.getFullYear(), now.getMonth() + 4, 1);
-
     const formatYM = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     return {
       start: formatYM(startD),
@@ -617,7 +690,6 @@
     };
   }
 
-  // 초기 날짜 인풋 세팅
   window.addEventListener("DOMContentLoaded", () => {
     const range = getInitialRange();
     document.getElementById("filterStartMonth").value = range.start;
@@ -647,7 +719,7 @@
     renderManagementView();
   }
 
-  // 실시간 동기화 리스너
+  // 실시간 동기화
   TALK_DOC.onSnapshot((docSnap) => {
     const syncStatusEl = document.getElementById("syncStatus");
     if (docSnap.exists) {
@@ -691,19 +763,20 @@
     else if (tabId === 'historyTab') filterHistory();
   }
 
-  // 1. 연설 계획표 렌더링 (지난달 포함 6개월 자동 필터링 적용)
+  // 1. 연설 계획표 및 인쇄 전용 테이블 렌더링
   function renderSchedules() {
     const tbody = document.getElementById("scheduleBody");
     const mobileContainer = document.getElementById("mobileCardsContainer");
-    if (!tbody || !mobileContainer) return;
+    const printTbody = document.getElementById("printTableBody");
+    if (!tbody || !mobileContainer || !printTbody) return;
 
     tbody.innerHTML = "";
     mobileContainer.innerHTML = "";
+    printTbody.innerHTML = "";
 
     const startM = document.getElementById("filterStartMonth")?.value || "";
     const endM = document.getElementById("filterEndMonth")?.value || "";
 
-    // 날짜 구간 필터링 (지난달 이전의 지나간 달들은 자동 가리기)
     const filtered = schedules.filter(item => {
       const itemMonth = item.date.slice(0, 7);
       if (startM && itemMonth < startM) return false;
@@ -715,6 +788,7 @@
       const emptyMsg = `<div style="text-align:center; padding:30px; color:var(--text-muted);">해당 기간에 등록된 계획표 일정이 없습니다.</div>`;
       tbody.innerHTML = `<tr><td colspan="8">${emptyMsg}</td></tr>`;
       mobileContainer.innerHTML = emptyMsg;
+      printTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;">일정이 없습니다.</td></tr>`;
       return;
     }
 
@@ -723,8 +797,9 @@
       const currentMonth = item.date.slice(0, 7);
       const isSpecialType = item.type && item.type !== "일반";
       const specialBadge = isSpecialType ? `<span class="badge-special">${item.type}</span>` : "";
+      const printSpecialBadge = isSpecialType ? `<span class="print-badge-special">${item.type}</span>` : "";
 
-      // PC 테이블
+      // 웹 PC 테이블
       if (currentMonth !== lastMonth) {
         const trDivider = document.createElement("tr");
         trDivider.className = "month-divider";
@@ -747,6 +822,19 @@
         </td>
       `;
       tbody.appendChild(tr);
+
+      // 인쇄 전용 테이블 (세련된 서식 + 빈칸 하이픈 숨김 처리)
+      const pTr = document.createElement("tr");
+      pTr.innerHTML = `
+        <td class="center date-col">${item.date}${printSpecialBadge}</td>
+        <td class="center talk-no-col ${!item.talkNo ? 'empty-cell' : ''}">${item.talkNo ? item.talkNo + '번' : '-'}</td>
+        <td class="center ${!item.speaker ? 'empty-cell' : ''}"><strong>${item.speaker || '-'}</strong></td>
+        <td class="center ${!item.congregation ? 'empty-cell' : ''}">${item.congregation || '-'}</td>
+        <td class="title-col ${!item.talkTitle ? 'empty-cell' : ''}">${item.talkTitle || '-'}</td>
+        <td class="center ${!item.chairman ? 'empty-cell' : ''}">${item.chairman || '-'}</td>
+        <td class="center ${!item.reader ? 'empty-cell' : ''}">${item.reader || '-'}</td>
+      `;
+      printTbody.appendChild(pTr);
 
       // 모바일 카드
       if (currentMonth !== lastMonth) {
@@ -781,13 +869,13 @@
       mobileContainer.appendChild(card);
     });
 
-    const printPeriod = document.getElementById("printPeriod");
-    if (printPeriod && filtered.length > 0) {
-      printPeriod.innerText = `조회 기간: ${filtered[0].date} ~ ${filtered[filtered.length-1].date}`;
+    const printPeriodBadge = document.getElementById("printPeriodBadge");
+    if (printPeriodBadge && filtered.length > 0) {
+      printPeriodBadge.innerText = `계획 기간: ${filtered[0].date} ~ ${filtered[filtered.length-1].date}`;
     }
   }
 
-  // 2. 공개강연 관리 탭 렌더링 (강연 번호, 이름, 회중, 강연주제, 연사 전화번호, 사회자, 초대자이름)
+  // 2. 공개강연 관리 탭 (인쇄되지 않음)
   function renderManagementView() {
     const tbody = document.getElementById("managementBody");
     const mobileContainer = document.getElementById("mobileMgmtCards");
@@ -814,7 +902,6 @@
     }
 
     filtered.forEach(item => {
-      // PC 테이블
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td class="center font-medium date-cell">${item.date}</td>
@@ -834,13 +921,12 @@
       `;
       tbody.appendChild(tr);
 
-      // 모바일 카드
       const card = document.createElement("div");
       card.className = "schedule-card";
       card.innerHTML = `
         <div class="card-top">
           <span class="card-date">📅 ${item.date}</span>
-          <span style="font-weight:700; color:var(--primary);">${item.talkNo ? '제' + item.talkNo + '번' : '번호 미지정'}</span>
+          <span style="font-weight:700; color:var(--primary);">${item.talkNo ? item.talkNo + '번' : '미지정'}</span>
         </div>
         <div class="card-talk">🎤 ${item.talkTitle || '(주제 미지정)'}</div>
         <div class="card-speaker">👤 연사: <strong>${item.speaker || '-'}</strong> (${item.congregation || '소속 미정'})</div>
@@ -871,7 +957,7 @@
     const targetDay = Number(document.getElementById("meetingDay").value);
 
     let generatedDates = [];
-    for (let m = 0; m < 6; m++) { // 6개월 생성
+    for (let m = 0; m < 6; m++) {
       let curMonth = month - 1 + m;
       let d = new Date(year, curMonth, 1);
       while (d.getMonth() === (curMonth % 12)) {
@@ -1123,7 +1209,6 @@
       const isSpecialType = item.type && item.type !== "일반";
       const specialBadge = isSpecialType ? `<span class="badge-special">${item.type}</span>` : "";
 
-      // PC 테이블
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td class="center font-medium date-cell"><strong>${item.date}</strong>${specialBadge}</td>
@@ -1137,7 +1222,6 @@
       `;
       tbody.appendChild(tr);
 
-      // 모바일 카드
       const card = document.createElement("div");
       card.className = "schedule-card";
       card.innerHTML = `
