@@ -110,7 +110,7 @@
     }
     .schedule-card .card-actions { display: flex; justify-content: flex-end; gap: 6px; padding-top: 4px; }
 
-    /* 일반 화면 테이블 */
+    /* PC / 태블릿 화면 테이블 */
     .table-container { display: none; width: 100%; overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 0.88rem; table-layout: fixed; }
     th, td { padding: 8px 9px; text-align: left; border-bottom: 1px solid var(--border); overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
@@ -145,6 +145,28 @@
       .table-container { display: block !important; }
     }
 
+    /* 플로팅 알림 팝업 (실시간 수정 반영 토스트) */
+    .update-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      display: none;
+      align-items: center;
+      gap: 12px;
+      z-index: 2000;
+      animation: slideUp 0.3s ease-out;
+    }
+    .update-toast.show { display: flex; }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
     /* 모달 */
     .modal-backdrop { 
       position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; pointer-events: none;
@@ -153,24 +175,18 @@
     .modal { background: #fff; width: 94%; max-width: 640px; max-height: 85vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
     .modal-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
     .modal-body { padding: 14px 16px; overflow-y: auto; }
-    .modal-footer { padding: 10px 16px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+    .modal-footer { padding: 10px 16px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
 
     .talk-grid { display: grid; grid-template-columns: 1fr; gap: 6px; }
     .talk-item { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
     .talk-item:hover { background: #eff6ff; border-color: var(--primary); }
     .talk-no { font-weight: 700; color: var(--primary); min-width: 48px; }
 
-    /* =========================================================
-       ★ [인쇄 전용 스타일 리디자인: 깔끔하고 정갈한 서식] ★
-       ========================================================= */
+    /* 인쇄 전용 컨테이너 */
     .print-only-container { display: none; }
 
     @media print {
-      @page { 
-        size: A4 landscape; 
-        margin: 8mm 10mm 8mm 10mm; /* A4 가로 최적 마진 */
-      }
-      
+      @page { size: A4 landscape; margin: 8mm 10mm; }
       html, body { 
         background: #fff !important; 
         padding: 0 !important; 
@@ -182,18 +198,12 @@
         print-color-adjust: exact !important;
       }
 
-      /* 웹 UI, 버튼, 관리 탭, 모바일 카드 완전 숨김 */
-      header, .nav-tabs, .toolbar, .no-print, button, .action-cell, .mobile-cards, #managementTab, #historyTab, .tab-content { 
+      header, .nav-tabs, .toolbar, .no-print, button, .action-cell, .mobile-cards, #managementTab, #historyTab, .tab-content, .update-toast { 
         display: none !important; 
       }
 
-      /* 인쇄 전용 컨테이너만 명확히 노출 */
-      .print-only-container { 
-        display: block !important; 
-        width: 100% !important; 
-      }
+      .print-only-container { display: block !important; width: 100% !important; }
 
-      /* 세련된 상단 공문서 헤더 */
       .print-header-box {
         display: flex !important;
         justify-content: space-between !important;
@@ -218,7 +228,6 @@
         border-radius: 4px !important;
       }
 
-      /* 인쇄용 고품격 테이블 서식 */
       .print-table { 
         width: 100% !important;
         border-collapse: collapse !important;
@@ -227,7 +236,6 @@
         border-bottom: 1.5px solid #2e7d32 !important;
       }
 
-      /* 산뜻한 연두색 헤더 (크고 굵은 서체) */
       .print-table th { 
         background-color: #e8f5e9 !important; 
         color: #1b5e20 !important;
@@ -240,7 +248,6 @@
         white-space: nowrap !important;
       }
 
-      /* 정갈한 본문 셀 (미세한 라이트 그레이 라인) */
       .print-table td { 
         border: 1px solid #e0e0e0 !important; 
         padding: 4.8px 5px !important;
@@ -249,13 +256,8 @@
         white-space: normal !important;
       }
 
-      /* 짝수 행 은은한 배경 구분 (시각적 피로도 감소) */
-      .print-table tr:nth-child(even) td {
-        background-color: #fafafa !important;
-      }
-
+      .print-table tr:nth-child(even) td { background-color: #fafafa !important; }
       .print-table td.center { text-align: center !important; }
-      
       .print-table .date-col { 
         font-weight: 700 !important;
         font-size: 8.3pt !important;
@@ -263,25 +265,9 @@
         white-space: nowrap !important;
         letter-spacing: -0.2px !important;
       }
-
-      .print-table .talk-no-col {
-        font-weight: 800 !important;
-        color: #1565c0 !important;
-      }
-
-      .print-table .title-col {
-        font-weight: 600 !important;
-        color: #111 !important;
-        text-align: left !important;
-        padding-left: 8px !important;
-      }
-
-      /* 빈칸(-) 기호 투명화 (공백 처리하여 정돈된 인상 제공) */
-      .print-table .empty-cell {
-        color: transparent !important;
-      }
-
-      /* 특별 일정 라벨 (순회방문 등) */
+      .print-table .talk-no-col { font-weight: 800 !important; color: #1565c0 !important; }
+      .print-table .title-col { font-weight: 600 !important; color: #111 !important; text-align: left !important; padding-left: 8px !important; }
+      .print-table .empty-cell { color: transparent !important; }
       .print-badge-special { 
         display: inline-block !important;
         border: 1px solid #d97706 !important; 
@@ -305,7 +291,7 @@
         회중 공개강연 계획표 및 연제 관리
         <span class="sync-status" id="syncStatus"><span class="sync-dot"></span>클라우드 연결 중...</span>
       </h1>
-      <p style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">실시간 동기화 (love-d0dcf)</p>
+      <p style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">실시간 양방향 동기화 (love-d0dcf)</p>
     </div>
     <div class="header-actions no-print">
       <button type="button" class="btn-outline" onclick="openTalkPickerModal()">📖 1~194번 연제</button>
@@ -321,9 +307,7 @@
     <button type="button" class="tab-btn" onclick="switchTab('historyTab', event)">🔍 연제/연사 이력 검색</button>
   </div>
 
-  <!-- =====================================================
-       [인쇄 전용 렌더링 영역 - 깔끔한 A4 가로 1장 전용]
-       ===================================================== -->
+  <!-- A4 가로 인쇄 전용 영역 -->
   <div class="print-only-container">
     <div class="print-header-box">
       <h2>회중 공개강연 계획표</h2>
@@ -345,7 +329,7 @@
     </table>
   </div>
 
-  <!-- 탭 1: 연설 계획표 (웹 전용) -->
+  <!-- 탭 1: 연설 계획표 -->
   <div id="scheduleTab" class="tab-content">
     <div class="card no-print">
       <div class="toolbar">
@@ -371,12 +355,12 @@
       </div>
     </div>
 
-    <!-- 1) 스마트폰 전용 카드 뷰 -->
+    <!-- 모바일 카드 뷰 -->
     <div class="mobile-cards no-print" id="mobileCardsContainer">
       <div style="text-align:center; padding:30px; color:var(--text-muted);">불러오는 중...</div>
     </div>
 
-    <!-- 2) PC / 태블릿 화면용 테이블 -->
+    <!-- PC 테이블 뷰 -->
     <div class="table-container card no-print">
       <table id="scheduleTable">
         <thead>
@@ -398,7 +382,7 @@
     </div>
   </div>
 
-  <!-- 탭 2: 공개강연 관리 (인쇄 대상 제외) -->
+  <!-- 탭 2: 공개강연 관리 (양방향 연동) -->
   <div id="managementTab" class="tab-content" style="display:none;">
     <div class="card no-print">
       <div class="toolbar">
@@ -415,10 +399,8 @@
       </div>
     </div>
 
-    <!-- 모바일 카드 뷰 -->
     <div class="mobile-cards no-print" id="mobileMgmtCards"></div>
 
-    <!-- PC 테이블 -->
     <div class="table-container card no-print">
       <table>
         <thead>
@@ -439,7 +421,7 @@
     </div>
   </div>
 
-  <!-- 탭 3: 연제/연사 이력 검색 (인쇄 대상 제외) -->
+  <!-- 탭 3: 연제/연사 이력 검색 -->
   <div id="historyTab" class="tab-content" style="display:none;">
     <div class="card no-print">
       <div class="toolbar">
@@ -478,6 +460,12 @@
       </table>
     </div>
   </div>
+</div>
+
+<!-- 플로팅 알림 팝업 (수정 감지 시 바로 새로고침 안내 토스트) -->
+<div id="updateToast" class="update-toast">
+  <span>🔄 강연 일정이 변경되었습니다.</span>
+  <button type="button" class="btn-primary" style="padding:4px 10px; font-size:0.75rem;" onclick="applyUpdateImmediately()">지금 반영하기</button>
 </div>
 
 <!-- 일정 등록/수정 모달 -->
@@ -558,9 +546,14 @@
           <input type="text" id="formNotes" placeholder="식사 대접 가정, 교통편 등" style="width:100%;">
         </div>
 
-        <div class="modal-footer" style="padding-right:0; padding-bottom:0; margin-top:14px;">
-          <button type="button" class="btn-outline" onclick="closeModal('scheduleModal')">취소</button>
-          <button type="submit" class="btn-primary" id="btnSaveSchedule">클라우드에 저장</button>
+        <div class="modal-footer" style="margin-top:14px;">
+          <div>
+            <button type="button" id="btnDeleteSlotCompletely" class="btn-danger" style="display:none; font-size:0.75rem; padding:5px 8px;" onclick="deleteSlotCompletely()">슬롯 영구 제거</button>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="btn-outline" onclick="closeModal('scheduleModal')">취소</button>
+            <button type="submit" class="btn-primary" id="btnSaveSchedule">클라우드에 저장</button>
+          </div>
         </div>
       </form>
     </div>
@@ -585,7 +578,7 @@
 </div>
 
 <script>
-  // 1. Firebase 초기화
+  // Firebase 초기화
   const firebaseConfig = {
     apiKey: "AIzaSyCdZlSMTeiZvmN_qn4Yqva06NE_NR7QB7I",
     authDomain: "love-d0dcf.firebaseapp.com",
@@ -677,6 +670,7 @@
 
   let schedules = [];
   let pickerTargetIsForm = false;
+  let isFirstLoad = true;
 
   function getInitialRange() {
     const now = new Date();
@@ -719,7 +713,7 @@
     renderManagementView();
   }
 
-  // 실시간 동기화
+  // 실시간 동기화 리스너
   TALK_DOC.onSnapshot((docSnap) => {
     const syncStatusEl = document.getElementById("syncStatus");
     if (docSnap.exists) {
@@ -735,9 +729,16 @@
       syncStatusEl.innerHTML = `<span class="sync-dot"></span>클라우드 연결됨`;
     }
     
+    // 데이터 변경 시 화면 갱신
     renderSchedules();
     renderManagementView();
     filterHistory();
+
+    // 첫 로딩이 아니고 외부에서 데이터가 수정된 경우 알림 토스트 표시
+    if (!isFirstLoad) {
+      showUpdateToast();
+    }
+    isFirstLoad = false;
   }, (err) => {
     console.error("Firebase Sync Error:", err);
     const syncStatusEl = document.getElementById("syncStatus");
@@ -749,6 +750,24 @@
 
   async function syncToCloud() {
     await TALK_DOC.set({ items: schedules, updatedAt: new Date() });
+    showUpdateToast();
+  }
+
+  function showUpdateToast() {
+    const toast = document.getElementById("updateToast");
+    if (!toast) return;
+    toast.classList.add("show");
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 4500);
+  }
+
+  function applyUpdateImmediately() {
+    const toast = document.getElementById("updateToast");
+    if (toast) toast.classList.remove("show");
+    renderSchedules();
+    renderManagementView();
+    filterHistory();
   }
 
   function switchTab(tabId, e) {
@@ -818,12 +837,12 @@
         <td class="center">${item.reader || '-'}</td>
         <td class="action-cell center">
           <button type="button" class="btn-outline" style="padding:2px 6px; font-size:0.75rem;" onclick="editSchedule('${item.id}')">수정</button>
-          <button type="button" class="btn-danger" style="padding:2px 6px; font-size:0.75rem;" onclick="deleteSchedule('${item.id}')">삭제</button>
+          <button type="button" class="btn-danger" style="padding:2px 6px; font-size:0.75rem;" onclick="clearScheduleContent('${item.id}')" title="날짜 유지, 내용 초기화">삭제</button>
         </td>
       `;
       tbody.appendChild(tr);
 
-      // 인쇄 전용 테이블 (세련된 서식 + 빈칸 하이픈 숨김 처리)
+      // 인쇄 전용 테이블
       const pTr = document.createElement("tr");
       pTr.innerHTML = `
         <td class="center date-col">${item.date}${printSpecialBadge}</td>
@@ -863,7 +882,7 @@
         </div>
         <div class="card-actions">
           <button type="button" class="btn-outline" style="padding:3px 9px;" onclick="editSchedule('${item.id}')">수정</button>
-          <button type="button" class="btn-danger" style="padding:3px 9px;" onclick="deleteSchedule('${item.id}')">삭제</button>
+          <button type="button" class="btn-danger" style="padding:3px 9px;" onclick="clearScheduleContent('${item.id}')">삭제</button>
         </div>
       `;
       mobileContainer.appendChild(card);
@@ -875,7 +894,7 @@
     }
   }
 
-  // 2. 공개강연 관리 탭 (인쇄되지 않음)
+  // 2. 공개강연 관리 탭 (양방향 연동)
   function renderManagementView() {
     const tbody = document.getElementById("managementBody");
     const mobileContainer = document.getElementById("mobileMgmtCards");
@@ -916,7 +935,7 @@
         <td class="center" style="font-weight:600; color:#0f172a;">${item.inviter || '-'}</td>
         <td class="action-cell center">
           <button type="button" class="btn-outline" style="padding:2px 6px; font-size:0.75rem;" onclick="editSchedule('${item.id}')">수정</button>
-          <button type="button" class="btn-danger" style="padding:2px 6px; font-size:0.75rem;" onclick="deleteSchedule('${item.id}')">삭제</button>
+          <button type="button" class="btn-danger" style="padding:2px 6px; font-size:0.75rem;" onclick="clearScheduleContent('${item.id}')">삭제</button>
         </td>
       `;
       tbody.appendChild(tr);
@@ -942,7 +961,7 @@
         </div>
         <div class="card-actions">
           <button type="button" class="btn-outline" style="padding:3px 9px;" onclick="editSchedule('${item.id}')">수정</button>
-          <button type="button" class="btn-danger" style="padding:3px 9px;" onclick="deleteSchedule('${item.id}')">삭제</button>
+          <button type="button" class="btn-danger" style="padding:3px 9px;" onclick="clearScheduleContent('${item.id}')">삭제</button>
         </div>
       `;
       mobileContainer.appendChild(card);
@@ -999,6 +1018,7 @@
     }
   }
 
+  // 저장 (양방향 완벽 동기화)
   async function saveSchedule(e) {
     e.preventDefault();
     const docId = document.getElementById("editDocId").value;
@@ -1041,13 +1061,49 @@
     }
   }
 
-  async function deleteSchedule(docId) {
-    if (confirm("해당 강연 일정을 삭제하시겠습니까?")) {
+  // ★ 핵심 변경: 삭제 시 날짜는 지우지 않고 내부 내용만 초기화 (공란화)
+  async function clearScheduleContent(docId) {
+    const item = schedules.find(s => s.id === docId);
+    if (!item) return;
+
+    if (confirm(`[${item.date}] 강연 일정의 내용을 초기화(삭제)하시겠습니까?\n※ 날짜 슬롯은 그대로 유지되며 내용만 공란으로 비워집니다.`)) {
+      try {
+        const idx = schedules.findIndex(s => s.id === docId);
+        if (idx !== -1) {
+          schedules[idx] = {
+            id: schedules[idx].id,
+            date: schedules[idx].date,
+            type: schedules[idx].type || "일반",
+            talkNo: "",
+            talkTitle: "",
+            speaker: "",
+            congregation: "",
+            phone: "",
+            inviter: "",
+            chairman: "",
+            reader: "",
+            notes: ""
+          };
+          await syncToCloud();
+        }
+      } catch (err) {
+        alert("초기화 실패: " + err.message);
+      }
+    }
+  }
+
+  // 슬롯 자체를 완전히 없애고 싶을 때 (모달 내부에서 제공)
+  async function deleteSlotCompletely() {
+    const docId = document.getElementById("editDocId").value;
+    if (!docId) return;
+
+    if (confirm("이 날짜 슬롯 자체를 계획표에서 완전히 제거하시겠습니까?")) {
       try {
         schedules = schedules.filter(s => s.id !== docId);
         await syncToCloud();
+        closeModal("scheduleModal");
       } catch (err) {
-        alert("삭제 실패: " + err.message);
+        alert("제거 실패: " + err.message);
       }
     }
   }
@@ -1070,6 +1126,9 @@
     document.getElementById("formNotes").value = item.notes || "";
     document.getElementById("modalTitle").innerText = "강연 일정 수정";
     
+    // 수정 모드일 때만 '슬롯 영구 제거' 버튼 노출
+    document.getElementById("btnDeleteSlotCompletely").style.display = "inline-flex";
+    
     document.getElementById("scheduleModal").classList.add("show");
     if (item.talkNo) checkDuplicate(parseInt(item.talkNo, 10));
   }
@@ -1081,6 +1140,7 @@
       document.getElementById("editDocId").value = "";
       document.getElementById("modalTitle").innerText = "강연 일정 등록";
       document.getElementById("duplicateWarning").style.display = "none";
+      document.getElementById("btnDeleteSlotCompletely").style.display = "none";
     }
   }
 
