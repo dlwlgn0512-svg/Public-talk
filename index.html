@@ -12,19 +12,18 @@
       --card-bg: #ffffff;
       --text: #1e293b;
       --text-muted: #64748b;
-      --border: #e2e8f0;
+      --border: #cbd5e1;
       --accent: #0284c7;
-      --warning: #f59e0b;
-      --danger: #ef4444;
       --success: #10b981;
+      --danger: #ef4444;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
-    body { background-color: var(--bg); color: var(--text); line-height: 1.5; padding: 20px; }
-    .container { max-width: 1240px; margin: 0 auto; position: relative; z-index: 1; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; word-break: keep-all; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.4; padding: 20px; }
+    .container { max-width: 1260px; margin: 0 auto; position: relative; z-index: 1; }
 
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid var(--border); }
-    h1 { font-size: 1.5rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 10px; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 2px solid var(--border); }
+    h1 { font-size: 1.4rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px; }
     .header-actions { display: flex; gap: 8px; }
 
     .sync-status { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 600; padding: 4px 10px; border-radius: 9999px; background: #e2e8f0; color: #475569; }
@@ -34,7 +33,7 @@
     .sync-status.online .sync-dot { background: var(--success); }
     .sync-status.error .sync-dot { background: var(--danger); }
 
-    button { cursor: pointer; padding: 8px 14px; border-radius: 6px; border: 1px solid transparent; font-weight: 600; font-size: 0.88rem; transition: 0.15s ease-in-out; display: inline-flex; align-items: center; gap: 6px; }
+    button { cursor: pointer; padding: 8px 14px; border-radius: 6px; border: 1px solid transparent; font-weight: 600; font-size: 0.86rem; transition: 0.15s ease-in-out; display: inline-flex; align-items: center; gap: 6px; }
     .btn-primary { background-color: var(--primary); color: #fff; }
     .btn-primary:hover { background-color: var(--primary-dark); }
     .btn-outline { background-color: #fff; border-color: var(--border); color: var(--text); }
@@ -44,67 +43,105 @@
     .btn-danger { background-color: #fee2e2; color: #b91c1c; border-color: #fecaca; }
     .btn-danger:hover { background-color: #fca5a5; }
 
-    .nav-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
-    .tab-btn { padding: 10px 18px; border: none; background: none; font-size: 0.95rem; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid transparent; border-radius: 0; }
+    .nav-tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .tab-btn { padding: 9px 16px; border: none; background: none; font-size: 0.92rem; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid transparent; border-radius: 0; }
     .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
 
-    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-    
-    .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
     .form-group-inline { display: flex; align-items: center; gap: 8px; }
-    input, select { padding: 7px 11px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; outline: none; }
+    input, select { padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.88rem; outline: none; }
     input:focus, select:focus { border-color: var(--primary); }
 
-    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); }
-    th { background-color: #f8fafc; font-weight: 600; color: #475569; }
+    /* 테이블 스타일 (가로비율 고정) */
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; table-layout: fixed; }
+    th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); overflow: hidden; text-overflow: ellipsis; }
+    th { background-color: #f8fafc; font-weight: 600; color: #475569; text-align: center; }
     tr:hover { background-color: #f8fafc; }
+    td.center, th.center { text-align: center; }
 
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
-    .badge-invited { background-color: #dbeafe; color: #1e40af; }
-    .badge-local { background-color: #dcfce7; color: #166534; }
-    .badge-outgoing { background-color: #fef3c7; color: #92400e; }
-    .badge-special { background-color: #f3e8ff; color: #6b21a8; }
+    .badge-special { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: 700; margin-left: 4px; background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
 
-    /* 모달 클릭 가림 방지 (핵심 수정) */
+    /* 모달 */
     .modal-backdrop { 
-      position: fixed; 
-      inset: 0; 
-      background: rgba(0,0,0,0.5); 
-      display: none; 
-      align-items: center; 
-      justify-content: center; 
-      z-index: 1000; 
-      pointer-events: none; /* 닫혀있을 때 화면 클릭 차단 방지 */
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; pointer-events: none;
     }
-    .modal-backdrop.show { 
-      display: flex !important; 
-      pointer-events: auto !important; /* 열렸을 때만 모달 터치/클릭 활성화 */
-    }
-    .modal { background: #fff; width: 90%; max-width: 720px; max-height: 85vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-    .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .modal-body { padding: 20px; overflow-y: auto; }
-    .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+    .modal-backdrop.show { display: flex !important; pointer-events: auto !important; }
+    .modal { background: #fff; width: 90%; max-width: 680px; max-height: 85vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+    .modal-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .modal-body { padding: 18px; overflow-y: auto; }
+    .modal-footer { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
 
-    .talk-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
-    .talk-item { padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .talk-grid { display: grid; grid-template-columns: 1fr; gap: 6px; }
+    .talk-item { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
     .talk-item:hover { background: #eff6ff; border-color: var(--primary); }
     .talk-no { font-weight: 700; color: var(--primary); min-width: 50px; }
 
+    /* ★ A4 1장(가로) 맞춤 인쇄 스타일 ★ */
     @media print {
-      @page { size: A4 landscape; margin: 10mm; }
-      body { background: #fff; padding: 0; color: #000; }
-      header, .nav-tabs, .toolbar, .no-print, button, .action-cell { display: none !important; }
-      .container { max-width: 100%; margin: 0; }
-      .card { border: none; padding: 0; box-shadow: none; }
-      .print-header { display: block !important; text-align: center; margin-bottom: 15px; }
-      .print-header h2 { font-size: 1.5rem; margin-bottom: 4px; }
-      .print-header p { font-size: 0.85rem; color: #333; }
-      table { border: 1.5px solid #000; font-size: 0.82rem; }
-      th, td { border: 1px solid #444 !important; padding: 6px 8px; color: #000; }
-      th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .month-divider { background-color: #e2e8f0 !important; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .badge { border: 1px solid #666; color: #000 !important; background: transparent !important; }
+      @page { 
+        size: A4 landscape; 
+        margin: 6mm 8mm 6mm 8mm; /* 여백을 콤팩트하게 최소화 */
+      }
+      html, body { 
+        background: #fff !important; 
+        padding: 0 !important; 
+        margin: 0 !important; 
+        color: #000 !important;
+        font-size: 8.2pt !important; /* 4개월치가 1장에 들어가도록 폰트 압축 */
+        line-height: 1.15 !important;
+      }
+      header, .nav-tabs, .toolbar, .no-print, button, .action-cell { 
+        display: none !important; 
+      }
+      .container { max-width: 100% !important; margin: 0 !important; width: 100% !important; }
+      .card { border: none !important; padding: 0 !important; box-shadow: none !important; }
+      
+      .print-header { 
+        display: flex !important; 
+        justify-content: space-between; 
+        align-items: flex-end; 
+        border-bottom: 1.5px solid #000; 
+        padding-bottom: 4px; 
+        margin-bottom: 6px; 
+      }
+      .print-header h2 { font-size: 1.25rem !important; font-weight: 800; }
+      .print-header p { font-size: 8pt !important; color: #444; }
+
+      table { 
+        border: 1.5px solid #000 !important; 
+        table-layout: fixed !important; 
+        width: 100% !important;
+        page-break-inside: avoid !important;
+      }
+      th, td { 
+        border: 1px solid #333 !important; 
+        padding: 4px 6px !important; /* 위아래 패딩을 줄여 1장에 수납 */
+        color: #000 !important; 
+        vertical-align: middle !important;
+        white-space: normal !important;
+      }
+      th { 
+        background-color: #f1f5f9 !important; 
+        font-weight: 700 !important;
+        -webkit-print-color-adjust: exact; 
+        print-color-adjust: exact; 
+      }
+      .month-divider td { 
+        background-color: #e2e8f0 !important; 
+        font-weight: 700 !important; 
+        padding: 2.5px 6px !important;
+        font-size: 7.8pt !important;
+        -webkit-print-color-adjust: exact; 
+        print-color-adjust: exact; 
+      }
+      .badge-special { 
+        border: 1px solid #000 !important; 
+        background: transparent !important; 
+        color: #000 !important; 
+        font-size: 7pt !important;
+        padding: 0 3px !important;
+      }
     }
     .print-header { display: none; }
   </style>
@@ -115,18 +152,19 @@
   <header>
     <div>
       <h1>
-        공개강연 계획표 및 연제 관리
+        회중 공개강연 계획표 및 연제 관리
         <span class="sync-status" id="syncStatus"><span class="sync-dot"></span>클라우드 연결 중...</span>
       </h1>
-      <p style="font-size:0.88rem; color:var(--text-muted); margin-top:2px;">회중 공개강연 일정 클라우드 실시간 동기화 (love-d0dcf)</p>
+      <p style="font-size:0.86rem; color:var(--text-muted); margin-top:2px;">실시간 동기화 (love-d0dcf)</p>
     </div>
     <div class="header-actions no-print">
       <button type="button" class="btn-outline" onclick="openTalkPickerModal()">📖 1~194번 연제 전체보기</button>
-      <button type="button" class="btn-print" onclick="window.print()">🖨️ 계획표 인쇄 / PDF 저장</button>
+      <button type="button" class="btn-print" onclick="window.print()">🖨️ A4 계획표 인쇄 / PDF 저장</button>
       <button type="button" class="btn-outline" onclick="exportData()">💾 백업(JSON)</button>
     </div>
   </header>
 
+  <!-- 인쇄 전용 헤더 -->
   <div class="print-header">
     <h2>회중 공개강연 계획표</h2>
     <p id="printPeriod">기간: 4개월 계획표</p>
@@ -149,7 +187,7 @@
             <option value="0">일요일</option>
             <option value="6">토요일</option>
           </select>
-          <button type="button" class="btn-outline" onclick="generate4MonthsSlots()">⚡ 4개월 빈 슬롯 일괄 생성</button>
+          <button type="button" class="btn-outline" onclick="generate4MonthsSlots()">⚡ 4개월 슬롯 자동 생성</button>
         </div>
         <div>
           <button type="button" class="btn-primary" onclick="openScheduleModal()">+ 강연 일정 추가</button>
@@ -157,23 +195,23 @@
       </div>
     </div>
 
+    <!-- 순서: 날짜, 연설번호, 연사, 회중, 연설주제, 사회자, 낭독자 -->
     <div class="card">
       <table id="scheduleTable">
         <thead>
           <tr>
-            <th style="width: 105px;">일자</th>
-            <th style="width: 95px;">구분</th>
-            <th style="width: 70px;">연제번호</th>
-            <th>강연 제목</th>
-            <th style="width: 110px;">연사</th>
-            <th style="width: 120px;">소속 회중</th>
-            <th style="width: 90px;">사회자</th>
-            <th style="width: 90px;">낭독자</th>
-            <th class="action-cell" style="width: 110px;">관리</th>
+            <th class="center" style="width: 12%;">날짜</th>
+            <th class="center" style="width: 8%;">연설번호</th>
+            <th class="center" style="width: 11%;">연사</th>
+            <th class="center" style="width: 13%;">회중</th>
+            <th style="width: 34%;">연설주제</th>
+            <th class="center" style="width: 11%;">사회자</th>
+            <th class="center" style="width: 11%;">낭독자</th>
+            <th class="action-cell center" style="width: 85px;">관리</th>
           </tr>
         </thead>
         <tbody id="scheduleBody">
-          <tr><td colspan="9" style="text-align:center; padding:30px; color:var(--text-muted);">클라우드 데이터를 불러오는 중입니다...</td></tr>
+          <tr><td colspan="8" style="text-align:center; padding:30px; color:var(--text-muted);">클라우드 데이터를 불러오는 중입니다...</td></tr>
         </tbody>
       </table>
     </div>
@@ -184,13 +222,15 @@
     <div class="card no-print">
       <div class="toolbar">
         <div style="flex:1; display:flex; gap:10px;">
-          <input type="text" id="searchKeyword" placeholder="연제 번호, 제목, 연사 성명, 회중명 검색..." style="flex:1;" oninput="filterHistory()">
+          <input type="text" id="searchKeyword" placeholder="연설번호, 주제, 연사, 회중명 검색..." style="flex:1;" oninput="filterHistory()">
           <select id="filterCategory" onchange="filterHistory()">
-            <option value="">모든 구분</option>
-            <option value="초대 연사">초대 연사</option>
-            <option value="자체 연사">자체 연사</option>
-            <option value="외부 파견">외부 파견</option>
-            <option value="대회/특별">대회/특별</option>
+            <option value="">모든 일정</option>
+            <option value="일반">일반 집회</option>
+            <option value="순회방문">순회방문</option>
+            <option value="순회대회">순회대회</option>
+            <option value="지역대회">지역대회</option>
+            <option value="특별 모임">특별 모임</option>
+            <option value="특별 강연">특별 강연</option>
           </select>
         </div>
       </div>
@@ -200,13 +240,13 @@
       <table id="historyTable">
         <thead>
           <tr>
-            <th style="width: 110px;">제공 일자</th>
-            <th style="width: 95px;">구분</th>
-            <th style="width: 70px;">연제번호</th>
-            <th>강연 제목</th>
-            <th style="width: 120px;">연사</th>
-            <th style="width: 140px;">소속 회중</th>
-            <th>비고 (식사/사회자 등)</th>
+            <th class="center" style="width: 12%;">날짜</th>
+            <th class="center" style="width: 8%;">연설번호</th>
+            <th class="center" style="width: 11%;">연사</th>
+            <th class="center" style="width: 13%;">회중</th>
+            <th style="width: 34%;">연설주제</th>
+            <th class="center" style="width: 11%;">사회자</th>
+            <th class="center" style="width: 11%;">낭독자</th>
           </tr>
         </thead>
         <tbody id="historyBody"></tbody>
@@ -227,57 +267,59 @@
         <input type="hidden" id="editDocId" value="">
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
           <div>
-            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">일자 *</label>
+            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">날짜 *</label>
             <input type="date" id="formDate" required style="width:100%;">
           </div>
           <div>
             <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">구분</label>
             <select id="formType" style="width:100%;">
-              <option value="초대 연사">초대 연사 (방문)</option>
-              <option value="자체 연사">자체 연사</option>
-              <option value="외부 파견">외부 파견 (출타)</option>
-              <option value="대회/특별">순회대회/지역대회/특별집회</option>
+              <option value="일반">일반 집회</option>
+              <option value="순회방문">순회방문</option>
+              <option value="순회대회">순회대회</option>
+              <option value="지역대회">지역대회</option>
+              <option value="특별 모임">특별 모임</option>
+              <option value="특별 강연">특별 강연</option>
             </select>
           </div>
         </div>
 
         <div style="margin-bottom:12px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-            <label style="font-size:0.82rem; font-weight:600;">연제 번호 및 제목</label>
-            <button type="button" class="btn-outline" style="padding:2px 8px; font-size:0.75rem;" onclick="openTalkPickerForForm()">📖 목록에서 연제 선택</button>
+            <label style="font-size:0.82rem; font-weight:600;">연설번호 및 주제</label>
+            <button type="button" class="btn-outline" style="padding:2px 8px; font-size:0.75rem;" onclick="openTalkPickerForForm()">📖 1~194번 연제 선택</button>
           </div>
           <div style="display:flex; gap:8px; align-items:center;">
-            <input type="number" id="formTalkNo" placeholder="번호 (1~194)" style="width:130px;" oninput="onTalkNoInput(this.value)">
-            <input type="text" id="formTalkTitle" placeholder="강연 제목" style="flex:1;" required>
+            <input type="number" id="formTalkNo" placeholder="번호 (1~194)" style="width:120px;" oninput="onTalkNoInput(this.value)">
+            <input type="text" id="formTalkTitle" placeholder="연설 주제" style="flex:1;">
           </div>
           <div id="duplicateWarning" style="color:var(--danger); font-size:0.8rem; margin-top:4px; display:none;"></div>
         </div>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
           <div>
-            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">연사 성명</label>
-            <input type="text" id="formSpeaker" placeholder="형제명" style="width:100%;">
+            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">연사</label>
+            <input type="text" id="formSpeaker" placeholder="연사 성명" style="width:100%;">
           </div>
           <div>
-            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">소속 회중</label>
-            <input type="text" id="formCongregation" placeholder="예: 대구동부 회중" style="width:100%;">
+            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">회중</label>
+            <input type="text" id="formCongregation" placeholder="예: 대구 황금 회중" style="width:100%;">
           </div>
         </div>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
           <div>
-            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">집회 사회자</label>
-            <input type="text" id="formChairman" placeholder="사회 형제" style="width:100%;">
+            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">사회자</label>
+            <input type="text" id="formChairman" placeholder="사회자 성명" style="width:100%;">
           </div>
           <div>
-            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">파수대 낭독자</label>
-            <input type="text" id="formReader" placeholder="낭독 형제" style="width:100%;">
+            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">낭독자</label>
+            <input type="text" id="formReader" placeholder="낭독자 성명" style="width:100%;">
           </div>
         </div>
 
         <div>
-          <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">비고 / 식사 대접 / 안내 사항</label>
-          <input type="text" id="formNotes" placeholder="식사 대접 가정, 교통편 등" style="width:100%;">
+          <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">비고 / 식사 안내</label>
+          <input type="text" id="formNotes" placeholder="식사 대접 가정, 교통 등" style="width:100%;">
         </div>
 
         <div class="modal-footer" style="padding-right:0; padding-bottom:0; margin-top:16px;">
@@ -291,13 +333,13 @@
 
 <!-- 1~194번 연제 피커 모달 -->
 <div class="modal-backdrop" id="talkPickerModal">
-  <div class="modal" style="max-width:800px;">
+  <div class="modal" style="max-width:760px;">
     <div class="modal-header">
-      <h3>공개강연 연제 데이터베이스 (1번~194번)</h3>
+      <h3>공개강연 연제 (1번~194번)</h3>
       <button type="button" style="border:none; background:none; font-size:1.2rem; cursor:pointer;" onclick="closeModal('talkPickerModal')">✕</button>
     </div>
-    <div style="padding:12px 20px; border-bottom:1px solid var(--border);">
-      <input type="text" id="talkSearchInput" placeholder="연제 번호 또는 단어 검색 (예: 가정, 평화, 35, 부활)..." style="width:100%;" oninput="renderTalkList()">
+    <div style="padding:10px 18px; border-bottom:1px solid var(--border);">
+      <input type="text" id="talkSearchInput" placeholder="연설번호 또는 단어 검색 (예: 가정, 평화, 90, 부활)..." style="width:100%;" oninput="renderTalkList()">
     </div>
     <div class="modal-body" id="talkListContainer"></div>
     <div class="modal-footer">
@@ -306,7 +348,7 @@
   </div>
 </div>
 
-<!-- 기본 브릿지 스크립트 (모듈 로드 전에도 클릭 함수가 작동하도록 사전 정의) -->
+<!-- 기본 제어 브릿지 함수 -->
 <script>
   window.switchTab = function(tabId, e) {
     document.querySelectorAll(".tab-content").forEach(el => el.style.display = "none");
@@ -460,23 +502,14 @@
     }
   });
 
-  window.getBadgeClass = function(type) {
-    switch(type) {
-      case "초대 연사": return "badge-invited";
-      case "자체 연사": return "badge-local";
-      case "외부 파견": return "badge-outgoing";
-      case "대회/특별": return "badge-special";
-      default: return "";
-    }
-  };
-
+  // 테이블 렌더링 (순서: 날짜, 연설번호, 연사, 회중, 연설주제, 사회자, 낭독자)
   window.renderSchedules = function() {
     const tbody = document.getElementById("scheduleBody");
     if (!tbody) return;
     tbody.innerHTML = "";
 
     if (schedules.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:30px; color:var(--text-muted);">클라우드에 등록된 일정이 없습니다. [4개월 빈 슬롯 일괄 생성]을 눌러보세요.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--text-muted);">클라우드에 등록된 일정이 없습니다. [4개월 슬롯 자동 생성]을 눌러 일정을 시작하세요.</td></tr>`;
       return;
     }
 
@@ -486,24 +519,26 @@
       if (currentMonth !== lastMonth) {
         const trDivider = document.createElement("tr");
         trDivider.className = "month-divider";
-        trDivider.innerHTML = `<td colspan="9" style="background:#f1f5f9; font-weight:700; padding:6px 12px; color:#334155;">🗓️ ${currentMonth.replace("-", "년 ")}월 계획</td>`;
+        trDivider.innerHTML = `<td colspan="8" style="background:#f1f5f9; font-weight:700; padding:4px 10px; color:#334155;">🗓️ ${currentMonth.replace("-", "년 ")}월</td>`;
         tbody.appendChild(trDivider);
         lastMonth = currentMonth;
       }
 
+      const isSpecialType = item.type && item.type !== "일반";
+      const specialBadge = isSpecialType ? `<span class="badge-special">${item.type}</span>` : "";
+
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td><strong>${item.date}</strong></td>
-        <td><span class="badge ${window.getBadgeClass(item.type)}">${item.type}</span></td>
-        <td style="font-weight:600; color:var(--primary);">${item.talkNo ? item.talkNo + '번' : '-'}</td>
-        <td><strong>${item.talkTitle || '-'}</strong></td>
-        <td>${item.speaker || '-'}</td>
-        <td style="color:var(--text-muted);">${item.congregation || '-'}</td>
-        <td>${item.chairman || '-'}</td>
-        <td>${item.reader || '-'}</td>
-        <td class="action-cell">
-          <button type="button" class="btn-outline" style="padding:3px 8px; font-size:0.75rem;" onclick="editSchedule('${item.id}')">수정</button>
-          <button type="button" class="btn-danger" style="padding:3px 8px; font-size:0.75rem;" onclick="deleteSchedule('${item.id}')">삭제</button>
+        <td class="center font-medium"><strong>${item.date}</strong>${specialBadge}</td>
+        <td class="center" style="font-weight:600; color:var(--primary);">${item.talkNo ? item.talkNo + '번' : '-'}</td>
+        <td class="center">${item.speaker || '-'}</td>
+        <td class="center" style="color:var(--text-muted);">${item.congregation || '-'}</td>
+        <td style="font-weight:500;"><strong>${item.talkTitle || '-'}</strong></td>
+        <td class="center">${item.chairman || '-'}</td>
+        <td class="center">${item.reader || '-'}</td>
+        <td class="action-cell center">
+          <button type="button" class="btn-outline" style="padding:2px 6px; font-size:0.75rem;" onclick="editSchedule('${item.id}')">수정</button>
+          <button type="button" class="btn-danger" style="padding:2px 6px; font-size:0.75rem;" onclick="deleteSchedule('${item.id}')">삭제</button>
         </td>
       `;
       tbody.appendChild(tr);
@@ -515,6 +550,7 @@
     }
   };
 
+  // 4개월 빈 슬롯 일괄 생성
   window.generate4MonthsSlots = async function() {
     const startVal = document.getElementById("scheduleStartMonth").value;
     if (!startVal) return alert("시작 년월을 선택해주세요.");
@@ -542,7 +578,7 @@
         const newDocRef = doc(schedulesCol);
         batch.set(newDocRef, {
           date: dateStr,
-          type: "초대 연사",
+          type: "일반",
           talkNo: "",
           talkTitle: "",
           speaker: "",
@@ -560,7 +596,7 @@
       await batch.commit();
       alert(`4개월간의 집회 슬롯 ${addedCount}개가 생성되었습니다.`);
     } else {
-      alert("선택한 기간의 슬롯이 이미 모두 등록되어 있습니다.");
+      alert("해당 기간의 주말 일정이 이미 모두 생성되어 있습니다.");
     }
   };
 
@@ -601,7 +637,7 @@
   };
 
   window.deleteSchedule = async function(docId) {
-    if (confirm("해당 일정을 삭제하시겠습니까?")) {
+    if (confirm("해당 강연 일정을 삭제하시겠습니까?")) {
       try {
         await deleteDoc(doc(db, "public_talk_schedules", docId));
       } catch (err) {
@@ -616,7 +652,7 @@
 
     document.getElementById("editDocId").value = docId;
     document.getElementById("formDate").value = item.date || "";
-    document.getElementById("formType").value = item.type || "초대 연사";
+    document.getElementById("formType").value = item.type || "일반";
     document.getElementById("formTalkNo").value = item.talkNo || "";
     document.getElementById("formTalkTitle").value = item.talkTitle || "";
     document.getElementById("formSpeaker").value = item.speaker || "";
@@ -649,7 +685,7 @@
     if (history.length > 0) {
       const last = history[history.length - 1];
       warn.style.display = "block";
-      warn.innerHTML = `⚠️ <strong>최근 배정 이력:</strong> 제${talkNo}번 강연은 <strong>${last.date}</strong> (${last.speaker || '연사 미상'} 형제)에 배정된 적이 있습니다.`;
+      warn.innerHTML = `⚠️ <strong>최근 배정 이력:</strong> 제${talkNo}번 강연은 <strong>${last.date}</strong> (${last.speaker || '연사 미상'} 형제)에 배정된 이력이 있습니다.`;
     } else {
       warn.style.display = "none";
     }
@@ -680,7 +716,7 @@
         item.className = "talk-item";
         item.onclick = () => selectTalk(i, title);
         item.innerHTML = `
-          <div style="display:flex; align-items:center; gap:12px;">
+          <div style="display:flex; align-items:center; gap:10px;">
             <span class="talk-no">제${i}번</span>
             <span style="font-weight:500;">${title}</span>
           </div>
@@ -702,59 +738,3 @@
       document.getElementById("formTalkNo").value = num;
       document.getElementById("formTalkTitle").value = title;
       checkDuplicate(num);
-    } else {
-      window.openScheduleModal();
-      document.getElementById("formTalkNo").value = num;
-      document.getElementById("formTalkTitle").value = title;
-      checkDuplicate(num);
-    }
-    window.closeModal("talkPickerModal");
-  }
-
-  window.filterHistory = function() {
-    const q = (document.getElementById("searchKeyword")?.value || "").trim().toLowerCase();
-    const cat = document.getElementById("filterCategory")?.value || "";
-    const tbody = document.getElementById("historyBody");
-    if (!tbody) return;
-    tbody.innerHTML = "";
-
-    const filtered = schedules.filter(item => {
-      const matchType = !cat || item.type === cat;
-      const matchText = !q || 
-        (item.talkNo && item.talkNo.toString().includes(q)) ||
-        (item.talkTitle && item.talkTitle.toLowerCase().includes(q)) ||
-        (item.speaker && item.speaker.toLowerCase().includes(q)) ||
-        (item.congregation && item.congregation.toLowerCase().includes(q));
-      return matchType && matchText;
-    });
-
-    if (filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">일치하는 강연 기록이 없습니다.</td></tr>`;
-      return;
-    }
-
-    filtered.forEach(item => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td><strong>${item.date}</strong></td>
-        <td><span class="badge ${window.getBadgeClass(item.type)}">${item.type}</span></td>
-        <td style="font-weight:600; color:var(--primary);">${item.talkNo ? item.talkNo + '번' : '-'}</td>
-        <td><strong>${item.talkTitle || '-'}</strong></td>
-        <td>${item.speaker || '-'}</td>
-        <td>${item.congregation || '-'}</td>
-        <td style="font-size:0.8rem; color:var(--text-muted);">${item.notes || (item.chairman ? `사회: ${item.chairman}` : '')}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  };
-
-  window.exportData = function() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(schedules, null, 2));
-    const dlAnchor = document.createElement("a");
-    dlAnchor.setAttribute("href", dataStr);
-    dlAnchor.setAttribute("download", `공개강연_클라우드백업_${new Date().toISOString().slice(0,10)}.json`);
-    dlAnchor.click();
-  };
-</script>
-</body>
-</html>
