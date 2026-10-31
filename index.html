@@ -8,6 +8,8 @@
   <!-- 파이어베이스 라이브러리 -->
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+  <!-- 고화질 이미지 캡처 라이브러리 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
     :root {
@@ -53,6 +55,8 @@
     .btn-outline:hover { background-color: #f1f5f9; }
     .btn-print { background-color: #0f172a; color: #fff; }
     .btn-print:hover { background-color: #334155; }
+    .btn-image { background-color: #7c3aed; color: #fff; }
+    .btn-image:hover { background-color: #6d28d9; }
     .btn-danger { background-color: #fee2e2; color: #b91c1c; border-color: #fecaca; }
     .btn-danger:hover { background-color: #fca5a5; }
 
@@ -182,10 +186,86 @@
     .talk-item:hover { background: #eff6ff; border-color: var(--primary); }
     .talk-no { font-weight: 700; color: var(--primary); min-width: 48px; }
 
-    /* 인쇄 전용 컨테이너 (평소에는 완전히 숨김) */
+    /* 인쇄 및 캡처 전용 컨테이너 스타일 */
     .print-only-container { display: none; }
 
-    /* A4 가로 인쇄 최적화 (초고속 즉시 출력) */
+    .print-header-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 2px solid #2e7d32;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+    }
+    .print-header-box h2 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #1b5e20;
+    }
+    .print-meta-badge {
+      font-size: 8.5pt;
+      font-weight: 600;
+      color: #333;
+      background: #f1f8e9;
+      border: 1px solid #c8e6c9;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .print-table { 
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      border-top: 1.5px solid #2e7d32;
+      border-bottom: 1.5px solid #2e7d32;
+    }
+
+    .print-table th { 
+      background-color: #e8f5e9; 
+      color: #1b5e20;
+      font-size: 9.8pt;
+      font-weight: 800;
+      text-align: center;
+      border: 1px solid #c8e6c9;
+      border-bottom: 2px solid #81c784;
+      padding: 6px 3px;
+      white-space: nowrap !important;
+    }
+
+    .print-table td { 
+      border: 1px solid #e0e0e0; 
+      padding: 5.5px 5px;
+      color: #212121; 
+      vertical-align: middle;
+      white-space: normal;
+    }
+
+    .print-table tr:nth-child(even) td { background-color: #fafafa; }
+    .print-table td.center { text-align: center; }
+    .print-table .date-col { 
+      font-weight: 700;
+      font-size: 8.3pt;
+      color: #263238;
+      white-space: nowrap !important;
+      letter-spacing: -0.2px;
+    }
+    .print-table .talk-no-col { font-weight: 800; color: #1565c0; }
+    .print-table .title-col { font-weight: 600; color: #111; text-align: left; padding-left: 8px; }
+    .print-table .empty-cell { color: transparent !important; }
+    .print-badge-special { 
+      display: inline-block;
+      border: 1px solid #d97706; 
+      background: #fffbeb; 
+      color: #b45309; 
+      font-size: 6.8pt; 
+      font-weight: 700; 
+      padding: 0 3px; 
+      border-radius: 3px; 
+      margin-left: 3px; 
+    }
+
+    /* A4 가로 인쇄 */
     @media print {
       @page { size: A4 landscape; margin: 8mm 10mm; }
       html, body { 
@@ -204,82 +284,6 @@
       }
 
       .print-only-container { display: block !important; width: 100% !important; }
-
-      .print-header-box {
-        display: flex !important;
-        justify-content: space-between !important;
-        align-items: flex-end !important;
-        border-bottom: 2px solid #2e7d32 !important;
-        padding-bottom: 6px !important;
-        margin-bottom: 8px !important;
-      }
-      .print-header-box h2 {
-        font-size: 1.45rem !important;
-        font-weight: 800 !important;
-        letter-spacing: 2px !important;
-        color: #1b5e20 !important;
-      }
-      .print-meta-badge {
-        font-size: 8.5pt !important;
-        font-weight: 600 !important;
-        color: #333 !important;
-        background: #f1f8e9 !important;
-        border: 1px solid #c8e6c9 !important;
-        padding: 3px 8px !important;
-        border-radius: 4px !important;
-      }
-
-      .print-table { 
-        width: 100% !important;
-        border-collapse: collapse !important;
-        table-layout: fixed !important;
-        border-top: 1.5px solid #2e7d32 !important;
-        border-bottom: 1.5px solid #2e7d32 !important;
-      }
-
-      .print-table th { 
-        background-color: #e8f5e9 !important; 
-        color: #1b5e20 !important;
-        font-size: 9.8pt !important;
-        font-weight: 800 !important;
-        text-align: center !important;
-        border: 1px solid #c8e6c9 !important;
-        border-bottom: 2px solid #81c784 !important;
-        padding: 6px 3px !important;
-        white-space: nowrap !important;
-      }
-
-      .print-table td { 
-        border: 1px solid #e0e0e0 !important; 
-        padding: 4.8px 5px !important;
-        color: #212121 !important; 
-        vertical-align: middle !important;
-        white-space: normal !important;
-      }
-
-      .print-table tr:nth-child(even) td { background-color: #fafafa !important; }
-      .print-table td.center { text-align: center !important; }
-      .print-table .date-col { 
-        font-weight: 700 !important;
-        font-size: 8.3pt !important;
-        color: #263238 !important;
-        white-space: nowrap !important;
-        letter-spacing: -0.2px !important;
-      }
-      .print-table .talk-no-col { font-weight: 800 !important; color: #1565c0 !important; }
-      .print-table .title-col { font-weight: 600 !important; color: #111 !important; text-align: left !important; padding-left: 8px !important; }
-      .print-table .empty-cell { color: transparent !important; }
-      .print-badge-special { 
-        display: inline-block !important;
-        border: 1px solid #d97706 !important; 
-        background: #fffbeb !important; 
-        color: #b45309 !important; 
-        font-size: 6.8pt !important; 
-        font-weight: 700 !important;
-        padding: 0 3px !important;
-        border-radius: 3px !important;
-        margin-left: 3px !important;
-      }
     }
   </style>
 </head>
@@ -296,6 +300,7 @@
     </div>
     <div class="header-actions no-print">
       <button type="button" class="btn-outline" onclick="openTalkPickerModal()">📖 1~194번 연제</button>
+      <button type="button" class="btn-image" onclick="generateTalkPlanImage()">🖼️ 사진(이미지) 저장</button>
       <button type="button" class="btn-print" onclick="fastPrint()">🖨️ A4 계획표 인쇄 / PDF</button>
       <button type="button" class="btn-outline" onclick="exportData()">💾 백업</button>
     </div>
@@ -330,11 +335,32 @@
     </table>
   </div>
 
+  <!-- 오프스크린 고화질 이미지 캡처용 템플릿 -->
+  <div id="talkImageCaptureTemplate" style="position: absolute; left: -9999px; top: -9999px; width: 1200px; background: #ffffff; padding: 24px;">
+    <div class="print-header-box">
+      <h2>회중 공개강연 계획표</h2>
+      <div class="print-meta-badge" id="imageCapturePeriodBadge">계획 기간: -</div>
+    </div>
+    <table class="print-table">
+      <thead>
+        <tr>
+          <th style="width: 14%;">날짜</th>
+          <th style="width: 8%;">번호</th>
+          <th style="width: 10%;">연사</th>
+          <th style="width: 12%;">회중</th>
+          <th style="width: 36%;">연설주제</th>
+          <th style="width: 10%;">사회자</th>
+          <th style="width: 10%;">낭독자</th>
+        </tr>
+      </thead>
+      <tbody id="imageCaptureTableBody"></tbody>
+    </table>
+  </div>
+
   <!-- 탭 1: 연설 계획표 -->
   <div id="scheduleTab" class="tab-content">
     <div class="card no-print">
       <div class="toolbar">
-        <!-- 생성 시작 달 기준으로 6개월 자동 연동 -->
         <div class="form-group-inline">
           <label style="font-size:0.86rem;"><strong>기준 연월(6개월):</strong></label>
           <input type="month" id="scheduleStartMonth" onchange="onBaseMonthChanged()">
@@ -377,7 +403,7 @@
     </div>
   </div>
 
-  <!-- 탭 2: 공개강연 관리 (양방향 연동) -->
+  <!-- 탭 2: 공개강연 관리 -->
   <div id="managementTab" class="tab-content" style="display:none;">
     <div class="card no-print">
       <div class="toolbar">
@@ -450,6 +476,29 @@
         </thead>
         <tbody id="historyBody"></tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<!-- 모달: 사진 미리보기 및 저장 안내 -->
+<div class="modal-backdrop" id="imagePreviewModal">
+  <div class="modal" style="max-width: 600px;">
+    <div class="modal-header">
+      <h3 style="font-size: 1rem; font-weight: 700;">🖼️ 공개강연 계획표 이미지 저장</h3>
+      <button type="button" style="border:none; background:none; font-size:1.2rem; cursor:pointer;" onclick="closeModal('imagePreviewModal')">✕</button>
+    </div>
+    <div class="modal-body" style="text-align: center;">
+      <p style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-bottom: 8px;">
+        💡 스마트폰에서는 이미지를 <b>1~2초간 꾹 눌러 '사진 앱에 저장'</b>하세요.
+      </p>
+      <div style="max-height: 55vh; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; background: #f8fafc; padding: 4px;">
+        <img id="previewModalImg" src="" alt="공개강연 계획표" style="width: 100%; height: auto; border-radius: 4px; display: block;">
+      </div>
+    </div>
+    <div class="modal-footer" style="justify-content: flex-end; gap: 6px;">
+      <button type="button" class="btn-primary" id="btnNativeShare" onclick="shareCapturedImage()" style="display:none;">📲 공유 / 사진 저장</button>
+      <button type="button" class="btn-outline" onclick="downloadImageDirectly()">⬇️ 파일 다운로드</button>
+      <button type="button" class="btn-outline" onclick="closeModal('imagePreviewModal')">닫기</button>
     </div>
   </div>
 </div>
@@ -570,6 +619,7 @@
 </div>
 
 <script>
+  // Firebase 초기화
   const firebaseConfig = {
     apiKey: "AIzaSyCdZlSMTeiZvmN_qn4Yqva06NE_NR7QB7I",
     authDomain: "love-d0dcf.firebaseapp.com",
@@ -639,7 +689,8 @@
     151: "여호와는 자신의 백성을 위한 “안전한 산성”이시다", 152: "실제로 있을 아마겟돈—왜? 언제?",
     153: "“외경스러운 날”을 가깝게 여기십시오!", 154: "저울에 달린 인간 통치", 155: "바빌론의 심판 시간은 도래하였는가?",
     156: "심판 날—두려워할 때인가, 아니면 희망을 가질 때인가?",
-    157: "참 그리스도인들이 하느님의 가르침을 단장하는 방법", 158: "용기를 내어 여호와를 신뢰하여라", 159: "위험한 세상에서 안전을 찾는 일",
+    157: "참 그리스도인들이 하느님의 가르침을 단장하는 방법",
+    158: "용기를 내어 여호와를 신뢰하여라", 159: "위험한 세상에서 안전을 찾는 일",
     160: "당신의 그리스도인 신분을 지키라!", 161: "예수께서는 왜 고난을 겪고 죽으셨는가?", 162: "어둠의 세상으로부터의 구출",
     163: "왜 참 하느님을 두려워해야 하는가?", 164: "하느님은 지금도 통제력을 행사하시는가?", 165: "당신은 누구의 가치관을 소중히 여기는가?",
     166: "진정한 믿음이란 무엇이며 어떻게 나타낼 수 있는가?", 167: "무분별한 세상에서 지혜롭게 행동하라",
@@ -662,8 +713,9 @@
   let schedules = [];
   let pickerTargetIsForm = false;
   let isFirstLoad = true;
+  let currentGeneratedBlob = null;
+  let currentGeneratedFilename = "";
 
-  // 기준월로부터 6개월 구간 계산
   function get6MonthsRange(baseYM) {
     if (!baseYM) {
       const now = new Date();
@@ -671,7 +723,7 @@
     }
     const [y, m] = baseYM.split('-').map(Number);
     const startD = new Date(y, m - 1, 1);
-    const endD = new Date(y, m - 1 + 5, 1); // 시작월 포함 6개월
+    const endD = new Date(y, m - 1 + 5, 1);
 
     const formatYM = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     return {
@@ -758,29 +810,28 @@
     else if (tabId === 'historyTab') filterHistory();
   }
 
-  // ★ 초고속 즉각 인쇄 (지연시간 0초)
   function fastPrint() {
-    // 인쇄 전용 테이블이 renderSchedules에 의해 이미 완성되어 있으므로 브라우저에 바로 인쇄 명령 전달
     window.requestAnimationFrame(() => {
       window.print();
     });
   }
 
-  // 1. 연설 계획표 렌더링 (생성 시작달 기준 6개월 자동 필터링)
+  // 1. 연설 계획표 및 인쇄/이미지 캡처 렌더링
   function renderSchedules() {
     const tbody = document.getElementById("scheduleBody");
     const mobileContainer = document.getElementById("mobileCardsContainer");
     const printTbody = document.getElementById("printTableBody");
-    if (!tbody || !mobileContainer || !printTbody) return;
+    const imgTbody = document.getElementById("imageCaptureTableBody");
+    if (!tbody || !mobileContainer || !printTbody || !imgTbody) return;
 
     tbody.innerHTML = "";
     mobileContainer.innerHTML = "";
     printTbody.innerHTML = "";
+    imgTbody.innerHTML = "";
 
     const baseYM = document.getElementById("scheduleStartMonth")?.value;
     const range = get6MonthsRange(baseYM);
 
-    // 시작달 기준 6개월만 정확히 필터링
     const filtered = schedules.filter(item => {
       const itemMonth = item.date.slice(0, 7);
       return itemMonth >= range.start && itemMonth <= range.end;
@@ -791,6 +842,7 @@
       tbody.innerHTML = `<tr><td colspan="8">${emptyMsg}</td></tr>`;
       mobileContainer.innerHTML = emptyMsg;
       printTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;">해당 기간에 일정이 없습니다.</td></tr>`;
+      imgTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;">해당 기간에 일정이 없습니다.</td></tr>`;
       return;
     }
 
@@ -825,9 +877,8 @@
       `;
       tbody.appendChild(tr);
 
-      // 인쇄 전용 테이블 (미리 빌드해두어 렉 방지)
-      const pTr = document.createElement("tr");
-      pTr.innerHTML = `
+      // 인쇄 & 이미지 전용 행
+      const rowHTML = `
         <td class="center date-col">${item.date}${printSpecialBadge}</td>
         <td class="center talk-no-col ${!item.talkNo ? 'empty-cell' : ''}">${item.talkNo ? item.talkNo + '번' : '-'}</td>
         <td class="center ${!item.speaker ? 'empty-cell' : ''}"><strong>${item.speaker || '-'}</strong></td>
@@ -836,7 +887,14 @@
         <td class="center ${!item.chairman ? 'empty-cell' : ''}">${item.chairman || '-'}</td>
         <td class="center ${!item.reader ? 'empty-cell' : ''}">${item.reader || '-'}</td>
       `;
+
+      const pTr = document.createElement("tr");
+      pTr.innerHTML = rowHTML;
       printTbody.appendChild(pTr);
+
+      const iTr = document.createElement("tr");
+      iTr.innerHTML = rowHTML;
+      imgTbody.appendChild(iTr);
 
       // 모바일 카드
       if (currentMonth !== lastMonth) {
@@ -871,13 +929,84 @@
       mobileContainer.appendChild(card);
     });
 
+    const periodText = `계획 기간: ${range.start} ~ ${range.end} (6개월)`;
     const printPeriodBadge = document.getElementById("printPeriodBadge");
-    if (printPeriodBadge) {
-      printPeriodBadge.innerText = `계획 기간: ${range.start} ~ ${range.end} (6개월)`;
-    }
+    if (printPeriodBadge) printPeriodBadge.innerText = periodText;
+
+    const imgPeriodBadge = document.getElementById("imageCapturePeriodBadge");
+    if (imgPeriodBadge) imgPeriodBadge.innerText = periodText;
   }
 
-  // 2. 공개강연 관리 탭 (동일 기준 6개월)
+  // ★ 공개강연 계획표 고화질 사진(이미지) 생성 & 저장 함수
+  function generateTalkPlanImage() {
+    const template = document.getElementById("talkImageCaptureTemplate");
+    if (!template) return;
+
+    renderSchedules();
+
+    const baseYM = document.getElementById("scheduleStartMonth")?.value || new Date().toISOString().slice(0, 7);
+    currentGeneratedFilename = `공개강연계획표_${baseYM}_6개월.png`;
+
+    html2canvas(template, {
+      scale: 2.5,
+      backgroundColor: "#ffffff",
+      useCORS: true
+    }).then(canvas => {
+      canvas.toBlob(blob => {
+        currentGeneratedBlob = blob;
+        const dataUrl = canvas.toDataURL("image/png");
+
+        const file = new File([blob], currentGeneratedFilename, { type: "image/png" });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          document.getElementById("btnNativeShare").style.display = "inline-flex";
+          navigator.share({
+            files: [file],
+            title: `공개강연 계획표 (${baseYM} 기준 6개월)`
+          }).catch(() => {
+            openImagePreviewModal(dataUrl);
+          });
+        } else {
+          document.getElementById("btnNativeShare").style.display = "none";
+          openImagePreviewModal(dataUrl);
+          downloadImageDirectly();
+        }
+      }, "image/png");
+    }).catch(err => {
+      console.error("이미지 생성 오류:", err);
+      alert("이미지 생성 중 오류가 발생했습니다.");
+    });
+  }
+
+  function openImagePreviewModal(dataUrl) {
+    document.getElementById("previewModalImg").src = dataUrl;
+    document.getElementById("imagePreviewModal").classList.add("show");
+  }
+
+  function downloadImageDirectly() {
+    if (!currentGeneratedBlob) return;
+    const url = URL.createObjectURL(currentGeneratedBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = currentGeneratedFilename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function shareCapturedImage() {
+    if (currentGeneratedBlob && navigator.share) {
+      const file = new File([currentGeneratedBlob], currentGeneratedFilename, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({
+          files: [file],
+          title: currentGeneratedFilename
+        }).catch(() => {});
+        return;
+      }
+    }
+    alert("이미지를 1~2초간 꾹 눌러 '사진 앱에 저장'을 선택해 주세요!");
+  }
+
+  // 2. 공개강연 관리 탭
   function renderManagementView() {
     const tbody = document.getElementById("managementBody");
     const mobileContainer = document.getElementById("mobileMgmtCards");
