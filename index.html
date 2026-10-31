@@ -2,10 +2,10 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>회중 공개강연 계획표 및 연제 관리 (클라우드 연동)</title>
   
-  <!-- 파이어베이스 라이브러리 (Safari 최적화) -->
+  <!-- 파이어베이스 라이브러리 (Safari 및 모바일 최적화) -->
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
 
@@ -21,27 +21,31 @@
       --accent: #0284c7;
       --success: #10b981;
       --danger: #ef4444;
-      /* 상단 카테고리 연두색 테마 */
       --header-green: #bbf7d0; 
       --header-green-dark: #14532d;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; word-break: keep-all; }
-    body { background-color: var(--bg); color: var(--text); line-height: 1.4; padding: 16px; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.4; padding: 12px; }
     .container { max-width: 1260px; margin: 0 auto; position: relative; z-index: 1; }
 
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 2px solid var(--border); }
-    h1 { font-size: clamp(1.1rem, 2vw, 1.4rem); font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px; }
-    .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    header { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--border); }
+    @media (min-width: 768px) {
+      body { padding: 20px; }
+      header { flex-direction: row; justify-content: space-between; align-items: center; }
+    }
 
-    .sync-status { display: inline-flex; align-items: center; gap: 6px; font-size: 0.76rem; font-weight: 600; padding: 3px 9px; border-radius: 9999px; background: #e2e8f0; color: #475569; }
+    h1 { font-size: 1.25rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .header-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .sync-status { display: inline-flex; align-items: center; gap: 5px; font-size: 0.74rem; font-weight: 600; padding: 3px 8px; border-radius: 9999px; background: #e2e8f0; color: #475569; }
     .sync-status.online { background: #dcfce7; color: #15803d; }
     .sync-status.error { background: #fee2e2; color: #b91c1c; }
-    .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+    .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #94a3b8; }
     .sync-status.online .sync-dot { background: var(--success); }
     .sync-status.error .sync-dot { background: var(--danger); }
 
-    button { cursor: pointer; padding: 7px 13px; border-radius: 6px; border: 1px solid transparent; font-weight: 600; font-size: clamp(0.78rem, 1.2vw, 0.86rem); transition: 0.15s ease-in-out; display: inline-flex; align-items: center; gap: 5px; }
+    button { cursor: pointer; padding: 7px 12px; border-radius: 6px; border: 1px solid transparent; font-weight: 600; font-size: 0.82rem; transition: 0.15s ease-in-out; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
     .btn-primary { background-color: var(--primary); color: #fff; }
     .btn-primary:hover { background-color: var(--primary-dark); }
     .btn-outline { background-color: #fff; border-color: var(--border); color: var(--text); }
@@ -51,51 +55,106 @@
     .btn-danger { background-color: #fee2e2; color: #b91c1c; border-color: #fecaca; }
     .btn-danger:hover { background-color: #fca5a5; }
 
-    .nav-tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
-    .tab-btn { padding: 8px 14px; border: none; background: none; font-size: clamp(0.82rem, 1.3vw, 0.92rem); font-weight: 600; color: var(--text-muted); border-bottom: 2px solid transparent; border-radius: 0; }
+    .nav-tabs { display: flex; gap: 6px; margin-bottom: 14px; border-bottom: 1px solid var(--border); }
+    .tab-btn { padding: 8px 12px; border: none; background: none; font-size: 0.88rem; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid transparent; border-radius: 0; }
     .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
 
-    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .toolbar { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+    @media (min-width: 768px) {
+      .toolbar { flex-direction: row; align-items: center; justify-content: space-between; }
+    }
     .form-group-inline { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    input, select { padding: 6px 9px; border: 1px solid var(--border); border-radius: 6px; font-size: clamp(0.8rem, 1.2vw, 0.88rem); outline: none; }
+    input, select { padding: 6px 9px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.86rem; outline: none; }
     input:focus, select:focus { border-color: var(--primary); }
 
-    /* 테이블 스타일 */
-    table { width: 100%; border-collapse: collapse; font-size: clamp(0.74rem, 1.1vw, 0.9rem); table-layout: fixed; }
+    /* 모바일 전용 카드 뷰 스타일 */
+    .mobile-cards { display: flex; flex-direction: column; gap: 10px; }
+    .schedule-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .schedule-card .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 6px;
+    }
+    .schedule-card .card-date {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .schedule-card .card-talk {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin: 2px 0;
+    }
+    .schedule-card .card-speaker {
+      font-size: 0.84rem;
+      color: #475569;
+    }
+    .schedule-card .card-duty {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: #f8fafc;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .schedule-card .card-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      padding-top: 4px;
+    }
+
+    /* 테이블 스타일 (PC/태블릿 및 인쇄용) */
+    .table-container { display: none; width: 100%; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; table-layout: fixed; }
     th, td { padding: 8px 9px; text-align: left; border-bottom: 1px solid var(--border); overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
     
-    /* 최상단 카테고리 헤더: 연두색 채움 + 크고 굵은 글씨 */
     th { 
       background-color: var(--header-green) !important; 
-      font-size: clamp(0.86rem, 1.25vw, 1.0rem); 
+      font-size: 0.92rem; 
       font-weight: 800; 
       color: var(--header-green-dark); 
       text-align: center; 
       border-top: 1px solid var(--border);
+      white-space: nowrap !important;
     }
-    
     tr:hover { background-color: #f8fafc; }
     td.center, th.center { text-align: center; }
 
-    /* 날짜 열 전용 한 줄 유지 */
-    .date-cell {
-      white-space: nowrap !important;
-      font-size: clamp(0.72rem, 1.05vw, 0.88rem);
-      letter-spacing: -0.3px;
-    }
-
+    .date-cell { white-space: nowrap !important; letter-spacing: -0.3px; }
     .badge-special { 
       display: inline-block; 
       padding: 1px 5px; 
       border-radius: 4px; 
-      font-size: clamp(0.65rem, 0.85vw, 0.74rem); 
+      font-size: 0.72rem; 
       font-weight: 700; 
-      margin-left: 3px; 
       background: #fef3c7; 
       color: #b45309; 
       border: 1px solid #fde68a;
       white-space: nowrap;
+    }
+
+    /* PC / 태블릿 화면(769px 이상)에서는 테이블 표시 */
+    @media (min-width: 769px) {
+      .mobile-cards { display: none !important; }
+      .table-container { display: block !important; }
     }
 
     /* 모달 */
@@ -103,33 +162,31 @@
       position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; pointer-events: none;
     }
     .modal-backdrop.show { display: flex !important; pointer-events: auto !important; }
-    .modal { background: #fff; width: 92%; max-width: 660px; max-height: 85vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-    .modal-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .modal-body { padding: 16px; overflow-y: auto; }
-    .modal-footer { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+    .modal { background: #fff; width: 94%; max-width: 620px; max-height: 85vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+    .modal-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .modal-body { padding: 14px 16px; overflow-y: auto; }
+    .modal-footer { padding: 10px 16px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
 
     .talk-grid { display: grid; grid-template-columns: 1fr; gap: 6px; }
     .talk-item { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
     .talk-item:hover { background: #eff6ff; border-color: var(--primary); }
     .talk-no { font-weight: 700; color: var(--primary); min-width: 48px; }
 
-    /* ★ A4 가로 인쇄 최적화 스타일 ★ */
+    /* ★ A4 가로 1장 인쇄 최적화 ★ */
     @media print {
-      @page { 
-        size: A4 landscape; 
-        margin: 7mm 8mm; /* 최적 여백 */
-      }
+      @page { size: A4 landscape; margin: 6mm 7mm; }
       html, body { 
         background: #fff !important; 
         padding: 0 !important; 
         margin: 0 !important; 
         color: #000 !important;
-        font-size: 8.5pt !important;
-        line-height: 1.2 !important;
+        font-size: 8.4pt !important;
+        line-height: 1.15 !important;
       }
-      header, .nav-tabs, .toolbar, .no-print, button, .action-cell { 
+      header, .nav-tabs, .toolbar, .no-print, button, .action-cell, .mobile-cards { 
         display: none !important; 
       }
+      .table-container { display: block !important; }
       .container { max-width: 100% !important; margin: 0 !important; width: 100% !important; }
       .card { border: none !important; padding: 0 !important; box-shadow: none !important; }
       
@@ -138,11 +195,11 @@
         justify-content: space-between; 
         align-items: flex-end; 
         border-bottom: 2px solid #000; 
-        padding-bottom: 4px; 
-        margin-bottom: 6px; 
+        padding-bottom: 3px; 
+        margin-bottom: 5px; 
       }
-      .print-header h2 { font-size: 1.3rem !important; font-weight: 800; }
-      .print-header p { font-size: 8.2pt !important; color: #333; }
+      .print-header h2 { font-size: 1.25rem !important; font-weight: 800; }
+      .print-header p { font-size: 8pt !important; color: #333; }
 
       table { 
         border: 1.5px solid #000 !important; 
@@ -151,44 +208,29 @@
         page-break-inside: avoid !important;
       }
 
-      /* 최상단 카테고리 헤더: 연두색 채움 & 크고 굵은 글씨 */
       th { 
         background-color: #bbf7d0 !important; 
         -webkit-print-color-adjust: exact !important; 
         print-color-adjust: exact !important;
-        font-size: 9.8pt !important;
+        font-size: 9.6pt !important;
         font-weight: 900 !important;
         color: #000 !important;
         border: 1px solid #222 !important;
-        padding: 6px 4px !important;
+        padding: 5px 2px !important;
+        white-space: nowrap !important;
       }
 
       td { 
         border: 1px solid #333 !important; 
-        padding: 5px 6px !important;
+        padding: 4.5px 5px !important;
         color: #000 !important; 
         vertical-align: middle !important;
         white-space: normal !important;
       }
 
-      .date-cell {
-        white-space: nowrap !important;
-        font-size: 8.2pt !important;
-        letter-spacing: -0.4px !important;
-      }
-
-      /* ★ 인쇄본에서 중간의 월별 구분 행 완벽 숨김 ★ */
-      .month-divider { 
-        display: none !important; 
-      }
-
-      .badge-special { 
-        border: 1px solid #000 !important; 
-        background: transparent !important; 
-        color: #000 !important; 
-        font-size: 7pt !important;
-        padding: 0 3px !important;
-      }
+      .date-cell { white-space: nowrap !important; font-size: 8.2pt !important; letter-spacing: -0.4px !important; }
+      .month-divider { display: none !important; }
+      .badge-special { border: 1px solid #000 !important; background: transparent !important; color: #000 !important; font-size: 6.8pt !important; padding: 0 2px !important; }
     }
     .print-header { display: none; }
   </style>
@@ -202,12 +244,12 @@
         회중 공개강연 계획표 및 연제 관리
         <span class="sync-status" id="syncStatus"><span class="sync-dot"></span>클라우드 연결 중...</span>
       </h1>
-      <p style="font-size:0.84rem; color:var(--text-muted); margin-top:2px;">실시간 클라우드 동기화 (love-d0dcf)</p>
+      <p style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">실시간 동기화 (love-d0dcf)</p>
     </div>
     <div class="header-actions no-print">
-      <button type="button" class="btn-outline" onclick="openTalkPickerModal()">📖 1~194번 연제 전체보기</button>
-      <button type="button" class="btn-print" onclick="window.print()">🖨️ A4 1장 인쇄 / PDF 저장</button>
-      <button type="button" class="btn-outline" onclick="exportData()">💾 백업(JSON)</button>
+      <button type="button" class="btn-outline" onclick="openTalkPickerModal()">📖 1~194번 연제</button>
+      <button type="button" class="btn-print" onclick="window.print()">🖨️ A4 1장 인쇄/PDF</button>
+      <button type="button" class="btn-outline" onclick="exportData()">💾 백업</button>
     </div>
   </header>
 
@@ -218,7 +260,7 @@
 
   <div class="nav-tabs no-print">
     <button type="button" class="tab-btn active" onclick="switchTab('scheduleTab', event)">📅 4개월 계획표</button>
-    <button type="button" class="tab-btn" onclick="switchTab('historyTab', event)">🔍 연제 및 연사 이력 검색</button>
+    <button type="button" class="tab-btn" onclick="switchTab('historyTab', event)">🔍 연제/연사 이력 검색</button>
   </div>
 
   <!-- 탭 1: 4개월 계획표 -->
@@ -226,28 +268,33 @@
     <div class="card no-print">
       <div class="toolbar">
         <div class="form-group-inline">
-          <label><strong>시작 연월:</strong></label>
+          <label style="font-size:0.84rem;"><strong>시작:</strong></label>
           <input type="month" id="scheduleStartMonth" value="2026-11">
-          <label><strong>집회 요일:</strong></label>
+          <label style="font-size:0.84rem;"><strong>요일:</strong></label>
           <select id="meetingDay">
             <option value="0">일요일</option>
             <option value="6">토요일</option>
           </select>
-          <button type="button" class="btn-outline" onclick="generate4MonthsSlots()">⚡ 4개월 슬롯 자동 생성</button>
+          <button type="button" class="btn-outline" onclick="generate4MonthsSlots()">⚡ 4개월 슬롯 생성</button>
         </div>
         <div>
-          <button type="button" class="btn-primary" onclick="openScheduleModal()">+ 강연 일정 추가</button>
+          <button type="button" class="btn-primary" onclick="openScheduleModal()">+ 강연 추가</button>
         </div>
       </div>
     </div>
 
-    <!-- 순서: 날짜, 연설번호, 연사, 회중, 연설주제, 사회자, 낭독자 -->
-    <div class="card">
+    <!-- 1) 스마트폰 전용 카드 뷰 -->
+    <div class="mobile-cards no-print" id="mobileCardsContainer">
+      <div style="text-align:center; padding:30px; color:var(--text-muted);">불러오는 중...</div>
+    </div>
+
+    <!-- 2) PC / 태블릿 / 인쇄 전용 테이블 ('연설번호' -> '번호'로 변경) -->
+    <div class="table-container card">
       <table id="scheduleTable">
         <thead>
           <tr>
             <th class="center" style="width: 14%;">날짜</th>
-            <th class="center" style="width: 8%;">연설번호</th>
+            <th class="center" style="width: 8%;">번호</th>
             <th class="center" style="width: 10%;">연사</th>
             <th class="center" style="width: 12%;">회중</th>
             <th style="width: 36%;">연설주제</th>
@@ -268,7 +315,7 @@
     <div class="card no-print">
       <div class="toolbar">
         <div style="flex:1; display:flex; gap:8px;">
-          <input type="text" id="searchKeyword" placeholder="연설번호, 주제, 연사, 회중명 검색..." style="flex:1;" oninput="filterHistory()">
+          <input type="text" id="searchKeyword" placeholder="번호, 주제, 연사, 회중명 검색..." style="flex:1;" oninput="filterHistory()">
           <select id="filterCategory" onchange="filterHistory()">
             <option value="">모든 일정</option>
             <option value="일반">일반 집회</option>
@@ -282,12 +329,16 @@
       </div>
     </div>
 
-    <div class="card">
+    <!-- 검색 결과 모바일 뷰 -->
+    <div class="mobile-cards no-print" id="mobileHistoryCards"></div>
+
+    <!-- 검색 결과 PC 테이블 뷰 -->
+    <div class="table-container card">
       <table id="historyTable">
         <thead>
           <tr>
             <th class="center" style="width: 14%;">날짜</th>
-            <th class="center" style="width: 8%;">연설번호</th>
+            <th class="center" style="width: 8%;">번호</th>
             <th class="center" style="width: 10%;">연사</th>
             <th class="center" style="width: 12%;">회중</th>
             <th style="width: 36%;">연설주제</th>
@@ -305,19 +356,19 @@
 <div class="modal-backdrop" id="scheduleModal">
   <div class="modal">
     <div class="modal-header">
-      <h3 id="modalTitle">강연 일정 등록</h3>
+      <h3 id="modalTitle" style="font-size:1rem;">강연 일정 등록</h3>
       <button type="button" style="border:none; background:none; font-size:1.2rem; cursor:pointer;" onclick="closeModal('scheduleModal')">✕</button>
     </div>
     <div class="modal-body">
       <form id="scheduleForm" onsubmit="saveSchedule(event)">
         <input type="hidden" id="editDocId" value="">
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
           <div>
-            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">날짜 *</label>
+            <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:3px;">날짜 *</label>
             <input type="date" id="formDate" required style="width:100%;">
           </div>
           <div>
-            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">구분</label>
+            <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:3px;">구분</label>
             <select id="formType" style="width:100%;">
               <option value="일반">일반 집회</option>
               <option value="순회방문">순회방문</option>
@@ -329,46 +380,46 @@
           </div>
         </div>
 
-        <div style="margin-bottom:12px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-            <label style="font-size:0.82rem; font-weight:600;">연설번호 및 주제</label>
-            <button type="button" class="btn-outline" style="padding:2px 8px; font-size:0.75rem;" onclick="openTalkPickerForForm()">📖 1~194번 연제 선택</button>
+        <div style="margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+            <label style="font-size:0.8rem; font-weight:600;">번호 및 연설 주제</label>
+            <button type="button" class="btn-outline" style="padding:2px 6px; font-size:0.72rem;" onclick="openTalkPickerForForm()">📖 1~194번 선택</button>
           </div>
-          <div style="display:flex; gap:8px; align-items:center;">
-            <input type="number" id="formTalkNo" placeholder="번호 (1~194)" style="width:120px;" oninput="onTalkNoInput(this.value)">
+          <div style="display:flex; gap:6px; align-items:center;">
+            <input type="number" id="formTalkNo" placeholder="번호 (1~194)" style="width:105px;" oninput="onTalkNoInput(this.value)">
             <input type="text" id="formTalkTitle" placeholder="연설 주제" style="flex:1;">
           </div>
-          <div id="duplicateWarning" style="color:var(--danger); font-size:0.8rem; margin-top:4px; display:none;"></div>
+          <div id="duplicateWarning" style="color:var(--danger); font-size:0.78rem; margin-top:3px; display:none;"></div>
         </div>
 
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
           <div>
-            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">연사</label>
+            <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:3px;">연사</label>
             <input type="text" id="formSpeaker" placeholder="연사 성명" style="width:100%;">
           </div>
           <div>
-            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">회중</label>
-            <input type="text" id="formCongregation" placeholder="예: 대구 황금 회중" style="width:100%;">
+            <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:3px;">회중</label>
+            <input type="text" id="formCongregation" placeholder="소속 회중" style="width:100%;">
           </div>
         </div>
 
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
           <div>
-            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">사회자</label>
+            <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:3px;">사회자</label>
             <input type="text" id="formChairman" placeholder="사회자 성명" style="width:100%;">
           </div>
           <div>
-            <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">낭독자</label>
+            <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:3px;">낭독자</label>
             <input type="text" id="formReader" placeholder="낭독자 성명" style="width:100%;">
           </div>
         </div>
 
         <div>
-          <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">비고 / 식사 안내</label>
+          <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:3px;">비고 / 식사 안내</label>
           <input type="text" id="formNotes" placeholder="식사 대접 가정, 교통 등" style="width:100%;">
         </div>
 
-        <div class="modal-footer" style="padding-right:0; padding-bottom:0; margin-top:16px;">
+        <div class="modal-footer" style="padding-right:0; padding-bottom:0; margin-top:14px;">
           <button type="button" class="btn-outline" onclick="closeModal('scheduleModal')">취소</button>
           <button type="submit" class="btn-primary" id="btnSaveSchedule">클라우드에 저장</button>
         </div>
@@ -379,13 +430,13 @@
 
 <!-- 1~194번 연제 피커 모달 -->
 <div class="modal-backdrop" id="talkPickerModal">
-  <div class="modal" style="max-width:760px;">
+  <div class="modal" style="max-width:720px;">
     <div class="modal-header">
-      <h3>공개강연 연제 (1번~194번)</h3>
+      <h3 style="font-size:0.95rem;">공개강연 연제 (1번~194번)</h3>
       <button type="button" style="border:none; background:none; font-size:1.2rem; cursor:pointer;" onclick="closeModal('talkPickerModal')">✕</button>
     </div>
-    <div style="padding:10px 18px; border-bottom:1px solid var(--border);">
-      <input type="text" id="talkSearchInput" placeholder="연설번호 또는 단어 검색 (예: 가정, 평화, 90, 부활)..." style="width:100%;" oninput="renderTalkList()">
+    <div style="padding:10px 14px; border-bottom:1px solid var(--border);">
+      <input type="text" id="talkSearchInput" placeholder="번호 또는 단어 검색 (예: 가정, 평화, 90, 부활)..." style="width:100%;" oninput="renderTalkList()">
     </div>
     <div class="modal-body" id="talkListContainer"></div>
     <div class="modal-footer">
@@ -395,7 +446,6 @@
 </div>
 
 <script>
-  // 1. 파이어베이스 초기화
   const firebaseConfig = {
     apiKey: "AIzaSyCdZlSMTeiZvmN_qn4Yqva06NE_NR7QB7I",
     authDomain: "love-d0dcf.firebaseapp.com",
@@ -411,7 +461,6 @@
   const db = firebase.firestore();
   const TALK_DOC = db.collection("sarangGroup").doc("publicTalkSchedules");
 
-  // 1~194번 연제 목록
   const TALK_DB = {
     1: "당신은 하느님을 얼마나 잘 아는가?", 2: "당신은 마지막 날의 생존자가 될 것인가?", 3: "여호와의 연합된 조직과 함께 전진하라",
     4: "우리 주위 세계에 나타나 있는 하느님에 대한 증거", 5: "행복한 가정생활을 위한 확실한 조언", 6: "노아 시대의 홍수와 당신",
@@ -480,7 +529,7 @@
     182: "하느님의 왕국이 지금 우리를 위해 하고 있는 일", 183: "무가치한 것들을 보지 말고 물리치십시오!",
     184: "죽으면 모든 것이 끝나는가?", 185: "진리가 우리의 생활에 영향을 미치는가?",
     186: "하느님의 행복한 백성과 연합하십시오", 187: "사랑의 하느님께서 왜 악을 허용하시는가?",
-    188: "당신은 여호와께 확신을 두고 있는가?", 189: "하느님과 함께 걸으면 지금부터 영원히 축복을 받는다",
+    188: "당신은 여호와의 확신을 두고 있는가?", 189: "하느님과 함께 걸으면 지금부터 영원히 축복을 받는다",
     190: "하느님께서 약속하신 완전하고 행복한 가정", 191: "사랑과 믿음이 세상을 이기는 방법",
     192: "당신은 영원한 생명에 이르는 길을 걷고 있는가?", 193: "세계적 고난의 때에 있을 구출",
     194: "경건한 지혜는 우리에게 어떻게 유익을 주는가?"
@@ -489,7 +538,6 @@
   let schedules = [];
   let pickerTargetIsForm = false;
 
-  // 실시간 동기화
   TALK_DOC.onSnapshot((docSnap) => {
     const syncStatusEl = document.getElementById("syncStatus");
     if (docSnap.exists) {
@@ -529,30 +577,35 @@
     if (tabId === 'historyTab') filterHistory();
   }
 
+  // 테이블 렌더링
   function renderSchedules() {
     const tbody = document.getElementById("scheduleBody");
-    if (!tbody) return;
+    const mobileContainer = document.getElementById("mobileCardsContainer");
+    if (!tbody || !mobileContainer) return;
+
     tbody.innerHTML = "";
+    mobileContainer.innerHTML = "";
 
     if (schedules.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--text-muted);">클라우드에 등록된 일정이 없습니다. [4개월 슬롯 자동 생성]을 눌러보세요.</td></tr>`;
+      const emptyMsg = `<div style="text-align:center; padding:30px; color:var(--text-muted);">등록된 일정이 없습니다. [4개월 슬롯 생성]을 눌러보세요.</div>`;
+      tbody.innerHTML = `<tr><td colspan="8">${emptyMsg}</td></tr>`;
+      mobileContainer.innerHTML = emptyMsg;
       return;
     }
 
     let lastMonth = "";
     schedules.forEach((item) => {
       const currentMonth = item.date.slice(0, 7);
-      // 웹앱 화면에서만 월 구분을 보여주고, 인쇄 시에는 CSS(.month-divider { display:none })로 깔끔히 사라집니다.
+      const isSpecialType = item.type && item.type !== "일반";
+      const specialBadge = isSpecialType ? `<span class="badge-special">${item.type}</span>` : "";
+
+      // 1. PC 테이블 렌더링
       if (currentMonth !== lastMonth) {
         const trDivider = document.createElement("tr");
         trDivider.className = "month-divider";
         trDivider.innerHTML = `<td colspan="8" style="background:#f1f5f9; font-weight:700; padding:4px 10px; color:#334155;">🗓️ ${currentMonth.replace("-", "년 ")}월</td>`;
         tbody.appendChild(trDivider);
-        lastMonth = currentMonth;
       }
-
-      const isSpecialType = item.type && item.type !== "일반";
-      const specialBadge = isSpecialType ? `<span class="badge-special">${item.type}</span>` : "";
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
@@ -569,6 +622,36 @@
         </td>
       `;
       tbody.appendChild(tr);
+
+      // 2. 모바일 전용 카드 렌더링
+      if (currentMonth !== lastMonth) {
+        const mDivider = document.createElement("div");
+        mDivider.style.cssText = "font-weight:700; color:#334155; padding:6px 4px 2px; font-size:0.86rem;";
+        mDivider.innerText = `🗓️ ${currentMonth.replace("-", "년 ")}월`;
+        mobileContainer.appendChild(mDivider);
+        lastMonth = currentMonth;
+      }
+
+      const card = document.createElement("div");
+      card.className = "schedule-card";
+      card.innerHTML = `
+        <div class="card-top">
+          <span class="card-date">📅 ${item.date} ${specialBadge}</span>
+          <span style="font-weight:700; color:var(--primary); font-size:0.85rem;">${item.talkNo ? item.talkNo + '번' : '미지정'}</span>
+        </div>
+        <div class="card-talk">🎤 ${item.talkTitle || '(연설 주제 미지정)'}</div>
+        <div class="card-speaker">👤 연사: <strong>${item.speaker || '-'}</strong> (${item.congregation || '소속 미정'})</div>
+        <div class="card-duty">
+          <span>사회: <b>${item.chairman || '-'}</b></span>
+          <span>낭독: <b>${item.reader || '-'}</b></span>
+          ${item.notes ? `<span>비고: ${item.notes}</span>` : ''}
+        </div>
+        <div class="card-actions">
+          <button type="button" class="btn-outline" style="padding:3px 9px;" onclick="editSchedule('${item.id}')">수정</button>
+          <button type="button" class="btn-danger" style="padding:3px 9px;" onclick="deleteSchedule('${item.id}')">삭제</button>
+        </div>
+      `;
+      mobileContainer.appendChild(card);
     });
 
     const printPeriod = document.getElementById("printPeriod");
@@ -618,9 +701,9 @@
     if (addedCount > 0) {
       schedules.sort((a,b) => a.date.localeCompare(b.date));
       await syncToCloud();
-      alert(`4개월간의 집회 슬롯 ${addedCount}개가 생성되었습니다.`);
+      alert(`4개월 슬롯 ${addedCount}개가 생성되었습니다.`);
     } else {
-      alert("해당 기간의 주말 일정이 이미 모두 생성되어 있습니다.");
+      alert("해당 기간의 일정이 이미 모두 생성되어 있습니다.");
     }
   }
 
@@ -665,7 +748,7 @@
   }
 
   async function deleteSchedule(docId) {
-    if (confirm("해당 강연 일정을 삭제하시겠습니까?")) {
+    if (confirm("해당 일정을 삭제하시겠습니까?")) {
       try {
         schedules = schedules.filter(s => s.id !== docId);
         await syncToCloud();
@@ -728,7 +811,7 @@
     if (history.length > 0) {
       const last = history[history.length - 1];
       warn.style.display = "block";
-      warn.innerHTML = `⚠️ <strong>최근 배정 이력:</strong> 제${talkNo}번 강연은 <strong>${last.date}</strong> (${last.speaker || '연사 미상'} 형제)에 배정된 이력이 있습니다.`;
+      warn.innerHTML = `⚠️ ${talkNo}번 강연은 <strong>${last.date}</strong> (${last.speaker || '연사 미상'} 형제)에 배정된 이력이 있습니다.`;
     } else {
       warn.style.display = "none";
     }
@@ -768,7 +851,7 @@
         item.innerHTML = `
           <div style="display:flex; align-items:center; gap:8px;">
             <span class="talk-no">제${i}번</span>
-            <span style="font-weight:500;">${title}</span>
+            <span style="font-weight:500; font-size:0.86rem;">${title}</span>
           </div>
           <button type="button" class="btn-outline" style="padding:2px 7px; font-size:0.75rem;">선택</button>
         `;
@@ -801,8 +884,11 @@
     const q = (document.getElementById("searchKeyword")?.value || "").trim().toLowerCase();
     const cat = document.getElementById("filterCategory")?.value || "";
     const tbody = document.getElementById("historyBody");
-    if (!tbody) return;
+    const mContainer = document.getElementById("mobileHistoryCards");
+    if (!tbody || !mContainer) return;
+
     tbody.innerHTML = "";
+    mContainer.innerHTML = "";
 
     const filtered = schedules.filter(item => {
       const matchType = !cat || item.type === cat;
@@ -815,7 +901,9 @@
     });
 
     if (filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">조건에 일치하는 기록이 없습니다.</td></tr>`;
+      const emptyMsg = `<div style="text-align:center; padding:30px; color:var(--text-muted);">조건에 일치하는 기록이 없습니다.</div>`;
+      tbody.innerHTML = `<tr><td colspan="7">${emptyMsg}</td></tr>`;
+      mContainer.innerHTML = emptyMsg;
       return;
     }
 
@@ -823,6 +911,7 @@
       const isSpecialType = item.type && item.type !== "일반";
       const specialBadge = isSpecialType ? `<span class="badge-special">${item.type}</span>` : "";
 
+      // PC 테이블
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td class="center font-medium date-cell"><strong>${item.date}</strong>${specialBadge}</td>
@@ -834,6 +923,23 @@
         <td class="center">${item.reader || '-'}</td>
       `;
       tbody.appendChild(tr);
+
+      // 모바일 카드
+      const card = document.createElement("div");
+      card.className = "schedule-card";
+      card.innerHTML = `
+        <div class="card-top">
+          <span class="card-date">📅 ${item.date} ${specialBadge}</span>
+          <span style="font-weight:700; color:var(--primary);">${item.talkNo ? item.talkNo + '번' : '미지정'}</span>
+        </div>
+        <div class="card-talk">🎤 ${item.talkTitle || '-'}</div>
+        <div class="card-speaker">👤 연사: <strong>${item.speaker || '-'}</strong> (${item.congregation || '-'})</div>
+        <div class="card-duty">
+          <span>사회: <b>${item.chairman || '-'}</b></span>
+          <span>낭독: <b>${item.reader || '-'}</b></span>
+        </div>
+      `;
+      mContainer.appendChild(card);
     });
   }
 
