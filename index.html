@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>회중 공개강연 계획표 및 연제 관리 (클라우드 연동)</title>
   
-  <!-- 안정적인 파이어베이스 라이브러리 (Safari 최적화) -->
+  <!-- 파이어베이스 라이브러리 (Safari 최적화) -->
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
 
@@ -21,6 +21,9 @@
       --accent: #0284c7;
       --success: #10b981;
       --danger: #ef4444;
+      /* 상단 카테고리 연두색 테마 */
+      --header-green: #bbf7d0; 
+      --header-green-dark: #14532d;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; word-break: keep-all; }
@@ -58,25 +61,35 @@
     input, select { padding: 6px 9px; border: 1px solid var(--border); border-radius: 6px; font-size: clamp(0.8rem, 1.2vw, 0.88rem); outline: none; }
     input:focus, select:focus { border-color: var(--primary); }
 
-    /* 반응형 테이블 & 글자 크기 자동 피팅 */
-    table { width: 100%; border-collapse: collapse; font-size: clamp(0.72rem, 1.05vw, 0.88rem); table-layout: fixed; }
-    th, td { padding: 7px 8px; text-align: left; border-bottom: 1px solid var(--border); overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
-    th { background-color: #f8fafc; font-weight: 600; color: #475569; text-align: center; }
+    /* 테이블 스타일 */
+    table { width: 100%; border-collapse: collapse; font-size: clamp(0.74rem, 1.1vw, 0.9rem); table-layout: fixed; }
+    th, td { padding: 8px 9px; text-align: left; border-bottom: 1px solid var(--border); overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
+    
+    /* 최상단 카테고리 헤더: 연두색 채움 + 크고 굵은 글씨 */
+    th { 
+      background-color: var(--header-green) !important; 
+      font-size: clamp(0.86rem, 1.25vw, 1.0rem); 
+      font-weight: 800; 
+      color: var(--header-green-dark); 
+      text-align: center; 
+      border-top: 1px solid var(--border);
+    }
+    
     tr:hover { background-color: #f8fafc; }
     td.center, th.center { text-align: center; }
 
-    /* 날짜 열 전용: 절대 줄바꿈 방지 및 자동 크기 조절 */
+    /* 날짜 열 전용 한 줄 유지 */
     .date-cell {
       white-space: nowrap !important;
-      font-size: clamp(0.7rem, 1.0vw, 0.86rem);
+      font-size: clamp(0.72rem, 1.05vw, 0.88rem);
       letter-spacing: -0.3px;
     }
 
     .badge-special { 
       display: inline-block; 
-      padding: 1px 4px; 
+      padding: 1px 5px; 
       border-radius: 4px; 
-      font-size: clamp(0.64rem, 0.85vw, 0.72rem); 
+      font-size: clamp(0.65rem, 0.85vw, 0.74rem); 
       font-weight: 700; 
       margin-left: 3px; 
       background: #fef3c7; 
@@ -100,19 +113,19 @@
     .talk-item:hover { background: #eff6ff; border-color: var(--primary); }
     .talk-no { font-weight: 700; color: var(--primary); min-width: 48px; }
 
-    /* A4 1장(가로) 인쇄 최적화 */
+    /* ★ A4 가로 인쇄 최적화 스타일 ★ */
     @media print {
       @page { 
         size: A4 landscape; 
-        margin: 5mm 6mm; /* A4 한 장 완전 수납 여백 */
+        margin: 7mm 8mm; /* 최적 여백 */
       }
       html, body { 
         background: #fff !important; 
         padding: 0 !important; 
         margin: 0 !important; 
         color: #000 !important;
-        font-size: 7.8pt !important;
-        line-height: 1.1 !important;
+        font-size: 8.5pt !important;
+        line-height: 1.2 !important;
       }
       header, .nav-tabs, .toolbar, .no-print, button, .action-cell { 
         display: none !important; 
@@ -124,12 +137,12 @@
         display: flex !important; 
         justify-content: space-between; 
         align-items: flex-end; 
-        border-bottom: 1.5px solid #000; 
-        padding-bottom: 3px; 
-        margin-bottom: 5px; 
+        border-bottom: 2px solid #000; 
+        padding-bottom: 4px; 
+        margin-bottom: 6px; 
       }
-      .print-header h2 { font-size: 1.2rem !important; font-weight: 800; }
-      .print-header p { font-size: 7.5pt !important; color: #444; }
+      .print-header h2 { font-size: 1.3rem !important; font-weight: 800; }
+      .print-header p { font-size: 8.2pt !important; color: #333; }
 
       table { 
         border: 1.5px solid #000 !important; 
@@ -137,38 +150,44 @@
         width: 100% !important;
         page-break-inside: avoid !important;
       }
-      th, td { 
+
+      /* 최상단 카테고리 헤더: 연두색 채움 & 크고 굵은 글씨 */
+      th { 
+        background-color: #bbf7d0 !important; 
+        -webkit-print-color-adjust: exact !important; 
+        print-color-adjust: exact !important;
+        font-size: 9.8pt !important;
+        font-weight: 900 !important;
+        color: #000 !important;
+        border: 1px solid #222 !important;
+        padding: 6px 4px !important;
+      }
+
+      td { 
         border: 1px solid #333 !important; 
-        padding: 3px 5px !important;
+        padding: 5px 6px !important;
         color: #000 !important; 
         vertical-align: middle !important;
         white-space: normal !important;
       }
+
       .date-cell {
         white-space: nowrap !important;
-        font-size: 7.4pt !important;
+        font-size: 8.2pt !important;
         letter-spacing: -0.4px !important;
       }
-      th { 
-        background-color: #f1f5f9 !important; 
-        font-weight: 700 !important;
-        -webkit-print-color-adjust: exact; 
-        print-color-adjust: exact; 
+
+      /* ★ 인쇄본에서 중간의 월별 구분 행 완벽 숨김 ★ */
+      .month-divider { 
+        display: none !important; 
       }
-      .month-divider td { 
-        background-color: #e2e8f0 !important; 
-        font-weight: 700 !important; 
-        padding: 2px 5px !important;
-        font-size: 7.4pt !important;
-        -webkit-print-color-adjust: exact; 
-        print-color-adjust: exact; 
-      }
+
       .badge-special { 
         border: 1px solid #000 !important; 
         background: transparent !important; 
         color: #000 !important; 
-        font-size: 6.5pt !important;
-        padding: 0 2px !important;
+        font-size: 7pt !important;
+        padding: 0 3px !important;
       }
     }
     .print-header { display: none; }
@@ -447,8 +466,8 @@
     151: "여호와는 자신의 백성을 위한 “안전한 산성”이시다", 152: "실제로 있을 아마겟돈—왜? 언제?",
     153: "“외경스러운 날”을 가깝게 여기십시오!", 154: "저울에 달린 인간 통치", 155: "바빌론의 심판 시간은 도래하였는가?",
     156: "심판 날—두려워할 때인가, 아니면 희망을 가질 때인가?", 157: "참 그리스도인들이 하느님의 가르침을 단장하는 방법",
-    158: "용기를 내어 여호와를 신뢰하여라", 159: "위험한 세상에서 안전을 찾는 일", 160: "당신의 그리스도인 신분을 지키라!",
-    161: "예수께서는 왜 고난을 겪고 죽으셨는가?", 162: "어둠의 세상으로부터의 구출",
+    158: "용기를 내어 여호와를 신뢰하여라", 159: "위험한 세상에서 안전을 찾는 일",
+    160: "당신의 그리스도인 신분을 지키라!", 161: "예수께서는 왜 고난을 겪고 죽으셨는가?", 162: "어둠의 세상으로부터의 구출",
     163: "왜 참 하느님을 두려워해야 하는가?", 164: "하느님은 지금도 통제력을 행사하시는가?", 165: "당신은 누구의 가치관을 소중히 여기는가?",
     166: "진정한 믿음이란 무엇이며 어떻게 나타낼 수 있는가?", 167: "무분별한 세상에서 지혜롭게 행동하라",
     168: "이 혼란스러운 세상에서도 안전을 느낄 수 있다!", 169: "왜 성서의 인도를 받아야 하는가?",
@@ -510,7 +529,6 @@
     if (tabId === 'historyTab') filterHistory();
   }
 
-  // 테이블 렌더링: 날짜 열 줄바꿈 절대 방지(date-cell 클래스 적용)
   function renderSchedules() {
     const tbody = document.getElementById("scheduleBody");
     if (!tbody) return;
@@ -524,6 +542,7 @@
     let lastMonth = "";
     schedules.forEach((item) => {
       const currentMonth = item.date.slice(0, 7);
+      // 웹앱 화면에서만 월 구분을 보여주고, 인쇄 시에는 CSS(.month-divider { display:none })로 깔끔히 사라집니다.
       if (currentMonth !== lastMonth) {
         const trDivider = document.createElement("tr");
         trDivider.className = "month-divider";
