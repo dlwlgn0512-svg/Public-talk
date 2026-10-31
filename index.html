@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>회중 공개강연 계획표 및 연제 관리 (클라우드 연동)</title>
+  <title>회중 공개강연 계획표 및 연제 관리</title>
   
-  <!-- 파이어베이스 라이브러리 (Safari 및 모바일 최적화) -->
+  <!-- 파이어베이스 라이브러리 -->
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
 
@@ -27,9 +27,9 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; word-break: keep-all; }
     body { background-color: var(--bg); color: var(--text); line-height: 1.4; padding: 12px; }
-    .container { max-width: 1260px; margin: 0 auto; position: relative; z-index: 1; }
+    .container { max-width: 1280px; margin: 0 auto; position: relative; z-index: 1; }
 
-    header { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--border); }
+    header { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 2px solid var(--border); }
     @media (min-width: 768px) {
       body { padding: 20px; }
       header { flex-direction: row; justify-content: space-between; align-items: center; }
@@ -55,9 +55,10 @@
     .btn-danger { background-color: #fee2e2; color: #b91c1c; border-color: #fecaca; }
     .btn-danger:hover { background-color: #fca5a5; }
 
-    .nav-tabs { display: flex; gap: 6px; margin-bottom: 14px; border-bottom: 1px solid var(--border); }
-    .tab-btn { padding: 8px 12px; border: none; background: none; font-size: 0.88rem; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid transparent; border-radius: 0; }
-    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+    /* 네비게이션 탭 (3개 탭 구성) */
+    .nav-tabs { display: flex; gap: 6px; margin-bottom: 14px; border-bottom: 1px solid var(--border); overflow-x: auto; }
+    .tab-btn { padding: 9px 14px; border: none; background: none; font-size: 0.88rem; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid transparent; border-radius: 0; white-space: nowrap; }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 700; }
 
     .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
     .toolbar { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
@@ -68,7 +69,7 @@
     input, select { padding: 6px 9px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.86rem; outline: none; }
     input:focus, select:focus { border-color: var(--primary); }
 
-    /* 모바일 전용 카드 뷰 스타일 */
+    /* 모바일 전용 카드 뷰 */
     .mobile-cards { display: flex; flex-direction: column; gap: 10px; }
     .schedule-card {
       background: #fff;
@@ -109,10 +110,11 @@
       font-size: 0.8rem;
       color: var(--text-muted);
       background: #f8fafc;
-      padding: 4px 8px;
+      padding: 5px 8px;
       border-radius: 4px;
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
+      gap: 2px;
     }
     .schedule-card .card-actions {
       display: flex;
@@ -151,7 +153,6 @@
       white-space: nowrap;
     }
 
-    /* PC / 태블릿 화면(769px 이상)에서는 테이블 표시 */
     @media (min-width: 769px) {
       .mobile-cards { display: none !important; }
       .table-container { display: block !important; }
@@ -162,7 +163,7 @@
       position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; pointer-events: none;
     }
     .modal-backdrop.show { display: flex !important; pointer-events: auto !important; }
-    .modal { background: #fff; width: 94%; max-width: 620px; max-height: 85vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+    .modal { background: #fff; width: 94%; max-width: 640px; max-height: 85vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
     .modal-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
     .modal-body { padding: 14px 16px; overflow-y: auto; }
     .modal-footer { padding: 10px 16px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
@@ -172,7 +173,7 @@
     .talk-item:hover { background: #eff6ff; border-color: var(--primary); }
     .talk-no { font-weight: 700; color: var(--primary); min-width: 48px; }
 
-    /* ★ A4 가로 1장 인쇄 최적화 ★ */
+    /* A4 가로 1장 인쇄 최적화 */
     @media print {
       @page { size: A4 landscape; margin: 6mm 7mm; }
       html, body { 
@@ -180,7 +181,7 @@
         padding: 0 !important; 
         margin: 0 !important; 
         color: #000 !important;
-        font-size: 8.4pt !important;
+        font-size: 8.3pt !important;
         line-height: 1.15 !important;
       }
       header, .nav-tabs, .toolbar, .no-print, button, .action-cell, .mobile-cards { 
@@ -255,29 +256,39 @@
 
   <div class="print-header">
     <h2>회중 공개강연 계획표</h2>
-    <p id="printPeriod">기간: 4개월 계획표</p>
+    <p id="printPeriod">기간: 계획표</p>
   </div>
 
+  <!-- 상단 네비게이션 탭 -->
   <div class="nav-tabs no-print">
-    <button type="button" class="tab-btn active" onclick="switchTab('scheduleTab', event)">📅 4개월 계획표</button>
+    <button type="button" class="tab-btn active" onclick="switchTab('scheduleTab', event)">📅 연설 계획표</button>
+    <button type="button" class="tab-btn" onclick="switchTab('managementTab', event)">📋 공개강연 관리</button>
     <button type="button" class="tab-btn" onclick="switchTab('historyTab', event)">🔍 연제/연사 이력 검색</button>
   </div>
 
-  <!-- 탭 1: 4개월 계획표 -->
+  <!-- 탭 1: 연설 계획표 -->
   <div id="scheduleTab" class="tab-content">
     <div class="card no-print">
       <div class="toolbar">
+        <!-- 상단 날짜 및 기간 필터 설정 영역 -->
         <div class="form-group-inline">
-          <label style="font-size:0.84rem;"><strong>시작:</strong></label>
-          <input type="month" id="scheduleStartMonth" value="2026-11">
-          <label style="font-size:0.84rem;"><strong>요일:</strong></label>
+          <label style="font-size:0.84rem;"><strong>조회 기간:</strong></label>
+          <input type="month" id="filterStartMonth" onchange="renderSchedules()">
+          <span>~</span>
+          <input type="month" id="filterEndMonth" onchange="renderSchedules()">
+          <button type="button" class="btn-outline" style="padding:4px 9px; font-size:0.78rem;" onclick="resetToDefault6Months()">🔄 지난달 포함 6개월</button>
+          <button type="button" class="btn-outline" style="padding:4px 9px; font-size:0.78rem;" onclick="showAllMonths()">전체 보기</button>
+        </div>
+
+        <!-- 6개월 슬롯 자동 생성 및 추가 -->
+        <div class="form-group-inline">
+          <label style="font-size:0.84rem;"><strong>생성 시작:</strong></label>
+          <input type="month" id="scheduleStartMonth">
           <select id="meetingDay">
             <option value="0">일요일</option>
             <option value="6">토요일</option>
           </select>
-          <button type="button" class="btn-outline" onclick="generate4MonthsSlots()">⚡ 4개월 슬롯 생성</button>
-        </div>
-        <div>
+          <button type="button" class="btn-outline" onclick="generate6MonthsSlots()">⚡ 6개월 슬롯 생성</button>
           <button type="button" class="btn-primary" onclick="openScheduleModal()">+ 강연 추가</button>
         </div>
       </div>
@@ -288,7 +299,7 @@
       <div style="text-align:center; padding:30px; color:var(--text-muted);">불러오는 중...</div>
     </div>
 
-    <!-- 2) PC / 태블릿 / 인쇄 전용 테이블 ('연설번호' -> '번호'로 변경) -->
+    <!-- 2) PC / 태블릿 / 인쇄 전용 테이블 -->
     <div class="table-container card">
       <table id="scheduleTable">
         <thead>
@@ -310,12 +321,53 @@
     </div>
   </div>
 
-  <!-- 탭 2: 이력 검색 -->
+  <!-- 탭 2: 공개강연 관리 (신설 탭) -->
+  <div id="managementTab" class="tab-content" style="display:none;">
+    <div class="card no-print">
+      <div class="toolbar">
+        <div class="form-group-inline">
+          <label style="font-size:0.84rem;"><strong>관리 조회 기간:</strong></label>
+          <input type="month" id="mgmtStartMonth" onchange="renderManagementView()">
+          <span>~</span>
+          <input type="month" id="mgmtEndMonth" onchange="renderManagementView()">
+          <button type="button" class="btn-outline" style="padding:4px 9px; font-size:0.78rem;" onclick="resetMgmtToDefault()">🔄 기본 6개월</button>
+        </div>
+        <div>
+          <button type="button" class="btn-primary" onclick="openScheduleModal()">+ 강연 추가</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 모바일 카드 뷰 (공개강연 관리 전용) -->
+    <div class="mobile-cards no-print" id="mobileMgmtCards"></div>
+
+    <!-- PC 테이블 (강연 번호, 이름, 회중, 강연주제, 연사 전화번호, 사회자, 초대자이름) -->
+    <div class="table-container card">
+      <table>
+        <thead>
+          <tr>
+            <th class="center" style="width: 10%;">일자</th>
+            <th class="center" style="width: 7%;">강연 번호</th>
+            <th class="center" style="width: 10%;">이름(연사)</th>
+            <th class="center" style="width: 11%;">회중</th>
+            <th style="width: 30%;">강연주제</th>
+            <th class="center" style="width: 12%;">연사 전화번호</th>
+            <th class="center" style="width: 9%;">사회자</th>
+            <th class="center" style="width: 11%;">초대자 이름</th>
+            <th class="action-cell center" style="width: 78px;">관리</th>
+          </tr>
+        </thead>
+        <tbody id="managementBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 탭 3: 연제/연사 이력 검색 -->
   <div id="historyTab" class="tab-content" style="display:none;">
     <div class="card no-print">
       <div class="toolbar">
         <div style="flex:1; display:flex; gap:8px;">
-          <input type="text" id="searchKeyword" placeholder="번호, 주제, 연사, 회중명 검색..." style="flex:1;" oninput="filterHistory()">
+          <input type="text" id="searchKeyword" placeholder="번호, 주제, 연사, 회중명, 초대자 검색..." style="flex:1;" oninput="filterHistory()">
           <select id="filterCategory" onchange="filterHistory()">
             <option value="">모든 일정</option>
             <option value="일반">일반 집회</option>
@@ -329,21 +381,20 @@
       </div>
     </div>
 
-    <!-- 검색 결과 모바일 뷰 -->
     <div class="mobile-cards no-print" id="mobileHistoryCards"></div>
 
-    <!-- 검색 결과 PC 테이블 뷰 -->
     <div class="table-container card">
       <table id="historyTable">
         <thead>
           <tr>
-            <th class="center" style="width: 14%;">날짜</th>
-            <th class="center" style="width: 8%;">번호</th>
+            <th class="center" style="width: 13%;">날짜</th>
+            <th class="center" style="width: 7%;">번호</th>
             <th class="center" style="width: 10%;">연사</th>
-            <th class="center" style="width: 12%;">회중</th>
-            <th style="width: 36%;">연설주제</th>
-            <th class="center" style="width: 10%;">사회자</th>
-            <th class="center" style="width: 10%;">낭독자</th>
+            <th class="center" style="width: 11%;">회중</th>
+            <th style="width: 33%;">연설주제</th>
+            <th class="center" style="width: 12%;">연사 전화번호</th>
+            <th class="center" style="width: 9%;">사회자</th>
+            <th class="center" style="width: 10%;">초대자</th>
           </tr>
         </thead>
         <tbody id="historyBody"></tbody>
@@ -382,24 +433,35 @@
 
         <div style="margin-bottom:10px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
-            <label style="font-size:0.8rem; font-weight:600;">번호 및 연설 주제</label>
+            <label style="font-size:0.8rem; font-weight:600;">강연 번호 및 주제</label>
             <button type="button" class="btn-outline" style="padding:2px 6px; font-size:0.72rem;" onclick="openTalkPickerForForm()">📖 1~194번 선택</button>
           </div>
           <div style="display:flex; gap:6px; align-items:center;">
             <input type="number" id="formTalkNo" placeholder="번호 (1~194)" style="width:105px;" oninput="onTalkNoInput(this.value)">
-            <input type="text" id="formTalkTitle" placeholder="연설 주제" style="flex:1;">
+            <input type="text" id="formTalkTitle" placeholder="강연 주제" style="flex:1;">
           </div>
           <div id="duplicateWarning" style="color:var(--danger); font-size:0.78rem; margin-top:3px; display:none;"></div>
         </div>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
           <div>
-            <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:3px;">연사</label>
+            <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:3px;">연사 성명</label>
             <input type="text" id="formSpeaker" placeholder="연사 성명" style="width:100%;">
           </div>
           <div>
-            <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:3px;">회중</label>
-            <input type="text" id="formCongregation" placeholder="소속 회중" style="width:100%;">
+            <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:3px;">소속 회중</label>
+            <input type="text" id="formCongregation" placeholder="예: 대구 황금 회중" style="width:100%;">
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+          <div>
+            <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:3px;">연사 전화번호</label>
+            <input type="tel" id="formPhone" placeholder="010-0000-0000" style="width:100%;">
+          </div>
+          <div>
+            <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:3px;">초대자 이름</label>
+            <input type="text" id="formInviter" placeholder="초대한 형제 성명" style="width:100%;">
           </div>
         </div>
 
@@ -416,7 +478,7 @@
 
         <div>
           <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:3px;">비고 / 식사 안내</label>
-          <input type="text" id="formNotes" placeholder="식사 대접 가정, 교통 등" style="width:100%;">
+          <input type="text" id="formNotes" placeholder="식사 대접 가정, 교통편 등" style="width:100%;">
         </div>
 
         <div class="modal-footer" style="padding-right:0; padding-bottom:0; margin-top:14px;">
@@ -428,7 +490,7 @@
   </div>
 </div>
 
-<!-- 1~194번 연제 피커 모달 -->
+<!-- 1~194번 연제 모달 -->
 <div class="modal-backdrop" id="talkPickerModal">
   <div class="modal" style="max-width:720px;">
     <div class="modal-header">
@@ -446,6 +508,7 @@
 </div>
 
 <script>
+  // 1. Firebase 초기화
   const firebaseConfig = {
     apiKey: "AIzaSyCdZlSMTeiZvmN_qn4Yqva06NE_NR7QB7I",
     authDomain: "love-d0dcf.firebaseapp.com",
@@ -538,6 +601,53 @@
   let schedules = [];
   let pickerTargetIsForm = false;
 
+  // 기본 날짜 구간 계산: "지난달(-1개월) ~ 앞으로 5개월 (총 6개월)"
+  function getInitialRange() {
+    const now = new Date();
+    // 시작월: 지난달
+    const startD = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    // 종료월: 앞으로 5개월 (시작월 포함 총 6개월)
+    const endD = new Date(now.getFullYear(), now.getMonth() + 4, 1);
+
+    const formatYM = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    return {
+      start: formatYM(startD),
+      end: formatYM(endD),
+      current: formatYM(now)
+    };
+  }
+
+  // 초기 날짜 인풋 세팅
+  window.addEventListener("DOMContentLoaded", () => {
+    const range = getInitialRange();
+    document.getElementById("filterStartMonth").value = range.start;
+    document.getElementById("filterEndMonth").value = range.end;
+    document.getElementById("mgmtStartMonth").value = range.start;
+    document.getElementById("mgmtEndMonth").value = range.end;
+    document.getElementById("scheduleStartMonth").value = range.current;
+  });
+
+  function resetToDefault6Months() {
+    const range = getInitialRange();
+    document.getElementById("filterStartMonth").value = range.start;
+    document.getElementById("filterEndMonth").value = range.end;
+    renderSchedules();
+  }
+
+  function showAllMonths() {
+    document.getElementById("filterStartMonth").value = "";
+    document.getElementById("filterEndMonth").value = "";
+    renderSchedules();
+  }
+
+  function resetMgmtToDefault() {
+    const range = getInitialRange();
+    document.getElementById("mgmtStartMonth").value = range.start;
+    document.getElementById("mgmtEndMonth").value = range.end;
+    renderManagementView();
+  }
+
+  // 실시간 동기화 리스너
   TALK_DOC.onSnapshot((docSnap) => {
     const syncStatusEl = document.getElementById("syncStatus");
     if (docSnap.exists) {
@@ -554,6 +664,7 @@
     }
     
     renderSchedules();
+    renderManagementView();
     filterHistory();
   }, (err) => {
     console.error("Firebase Sync Error:", err);
@@ -574,10 +685,13 @@
     const target = document.getElementById(tabId);
     if (target) target.style.display = "block";
     if (e && e.target) e.target.classList.add("active");
-    if (tabId === 'historyTab') filterHistory();
+    
+    if (tabId === 'scheduleTab') renderSchedules();
+    else if (tabId === 'managementTab') renderManagementView();
+    else if (tabId === 'historyTab') filterHistory();
   }
 
-  // 테이블 렌더링
+  // 1. 연설 계획표 렌더링 (지난달 포함 6개월 자동 필터링 적용)
   function renderSchedules() {
     const tbody = document.getElementById("scheduleBody");
     const mobileContainer = document.getElementById("mobileCardsContainer");
@@ -586,20 +700,31 @@
     tbody.innerHTML = "";
     mobileContainer.innerHTML = "";
 
-    if (schedules.length === 0) {
-      const emptyMsg = `<div style="text-align:center; padding:30px; color:var(--text-muted);">등록된 일정이 없습니다. [4개월 슬롯 생성]을 눌러보세요.</div>`;
+    const startM = document.getElementById("filterStartMonth")?.value || "";
+    const endM = document.getElementById("filterEndMonth")?.value || "";
+
+    // 날짜 구간 필터링 (지난달 이전의 지나간 달들은 자동 가리기)
+    const filtered = schedules.filter(item => {
+      const itemMonth = item.date.slice(0, 7);
+      if (startM && itemMonth < startM) return false;
+      if (endM && itemMonth > endM) return false;
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      const emptyMsg = `<div style="text-align:center; padding:30px; color:var(--text-muted);">해당 기간에 등록된 계획표 일정이 없습니다.</div>`;
       tbody.innerHTML = `<tr><td colspan="8">${emptyMsg}</td></tr>`;
       mobileContainer.innerHTML = emptyMsg;
       return;
     }
 
     let lastMonth = "";
-    schedules.forEach((item) => {
+    filtered.forEach((item) => {
       const currentMonth = item.date.slice(0, 7);
       const isSpecialType = item.type && item.type !== "일반";
       const specialBadge = isSpecialType ? `<span class="badge-special">${item.type}</span>` : "";
 
-      // 1. PC 테이블 렌더링
+      // PC 테이블
       if (currentMonth !== lastMonth) {
         const trDivider = document.createElement("tr");
         trDivider.className = "month-divider";
@@ -623,7 +748,7 @@
       `;
       tbody.appendChild(tr);
 
-      // 2. 모바일 전용 카드 렌더링
+      // 모바일 카드
       if (currentMonth !== lastMonth) {
         const mDivider = document.createElement("div");
         mDivider.style.cssText = "font-weight:700; color:#334155; padding:6px 4px 2px; font-size:0.86rem;";
@@ -642,9 +767,11 @@
         <div class="card-talk">🎤 ${item.talkTitle || '(연설 주제 미지정)'}</div>
         <div class="card-speaker">👤 연사: <strong>${item.speaker || '-'}</strong> (${item.congregation || '소속 미정'})</div>
         <div class="card-duty">
-          <span>사회: <b>${item.chairman || '-'}</b></span>
-          <span>낭독: <b>${item.reader || '-'}</b></span>
-          ${item.notes ? `<span>비고: ${item.notes}</span>` : ''}
+          <div style="display:flex; justify-content:space-between;">
+            <span>사회: <b>${item.chairman || '-'}</b></span>
+            <span>낭독: <b>${item.reader || '-'}</b></span>
+          </div>
+          ${item.notes ? `<div style="font-size:0.75rem; color:#64748b;">비고: ${item.notes}</div>` : ''}
         </div>
         <div class="card-actions">
           <button type="button" class="btn-outline" style="padding:3px 9px;" onclick="editSchedule('${item.id}')">수정</button>
@@ -655,19 +782,96 @@
     });
 
     const printPeriod = document.getElementById("printPeriod");
-    if (printPeriod && schedules.length > 0) {
-      printPeriod.innerText = `계획 기간: ${schedules[0].date} ~ ${schedules[schedules.length-1].date}`;
+    if (printPeriod && filtered.length > 0) {
+      printPeriod.innerText = `조회 기간: ${filtered[0].date} ~ ${filtered[filtered.length-1].date}`;
     }
   }
 
-  async function generate4MonthsSlots() {
+  // 2. 공개강연 관리 탭 렌더링 (강연 번호, 이름, 회중, 강연주제, 연사 전화번호, 사회자, 초대자이름)
+  function renderManagementView() {
+    const tbody = document.getElementById("managementBody");
+    const mobileContainer = document.getElementById("mobileMgmtCards");
+    if (!tbody || !mobileContainer) return;
+
+    tbody.innerHTML = "";
+    mobileContainer.innerHTML = "";
+
+    const startM = document.getElementById("mgmtStartMonth")?.value || "";
+    const endM = document.getElementById("mgmtEndMonth")?.value || "";
+
+    const filtered = schedules.filter(item => {
+      const itemMonth = item.date.slice(0, 7);
+      if (startM && itemMonth < startM) return false;
+      if (endM && itemMonth > endM) return false;
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      const emptyMsg = `<div style="text-align:center; padding:30px; color:var(--text-muted);">조회 조건에 맞는 강연 관리 데이터가 없습니다.</div>`;
+      tbody.innerHTML = `<tr><td colspan="9">${emptyMsg}</td></tr>`;
+      mobileContainer.innerHTML = emptyMsg;
+      return;
+    }
+
+    filtered.forEach(item => {
+      // PC 테이블
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="center font-medium date-cell">${item.date}</td>
+        <td class="center" style="font-weight:700; color:var(--primary);">${item.talkNo ? item.talkNo + '번' : '-'}</td>
+        <td class="center"><strong>${item.speaker || '-'}</strong></td>
+        <td class="center" style="color:var(--text-muted);">${item.congregation || '-'}</td>
+        <td style="font-weight:500;"><strong>${item.talkTitle || '-'}</strong></td>
+        <td class="center">
+          ${item.phone ? `<a href="tel:${item.phone}" style="color:var(--primary); text-decoration:none; font-weight:600;">📞 ${item.phone}</a>` : '-'}
+        </td>
+        <td class="center">${item.chairman || '-'}</td>
+        <td class="center" style="font-weight:600; color:#0f172a;">${item.inviter || '-'}</td>
+        <td class="action-cell center">
+          <button type="button" class="btn-outline" style="padding:2px 6px; font-size:0.75rem;" onclick="editSchedule('${item.id}')">수정</button>
+          <button type="button" class="btn-danger" style="padding:2px 6px; font-size:0.75rem;" onclick="deleteSchedule('${item.id}')">삭제</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+
+      // 모바일 카드
+      const card = document.createElement("div");
+      card.className = "schedule-card";
+      card.innerHTML = `
+        <div class="card-top">
+          <span class="card-date">📅 ${item.date}</span>
+          <span style="font-weight:700; color:var(--primary);">${item.talkNo ? '제' + item.talkNo + '번' : '번호 미지정'}</span>
+        </div>
+        <div class="card-talk">🎤 ${item.talkTitle || '(주제 미지정)'}</div>
+        <div class="card-speaker">👤 연사: <strong>${item.speaker || '-'}</strong> (${item.congregation || '소속 미정'})</div>
+        <div class="card-duty">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span>연사 연락처:</span>
+            ${item.phone ? `<a href="tel:${item.phone}" style="color:var(--primary); text-decoration:none; font-weight:700;">📞 ${item.phone}</a>` : '<span style="color:#94a3b8;">미입력</span>'}
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <span>초대자: <b>${item.inviter || '-'}</b></span>
+            <span>사회자: <b>${item.chairman || '-'}</b></span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button type="button" class="btn-outline" style="padding:3px 9px;" onclick="editSchedule('${item.id}')">수정</button>
+          <button type="button" class="btn-danger" style="padding:3px 9px;" onclick="deleteSchedule('${item.id}')">삭제</button>
+        </div>
+      `;
+      mobileContainer.appendChild(card);
+    });
+  }
+
+  // 3. 6개월 슬롯 자동 생성 마법사
+  async function generate6MonthsSlots() {
     const startVal = document.getElementById("scheduleStartMonth").value;
-    if (!startVal) return alert("시작 년월을 선택해주세요.");
+    if (!startVal) return alert("생성을 시작할 년월을 선택해주세요.");
     const [year, month] = startVal.split("-").map(Number);
     const targetDay = Number(document.getElementById("meetingDay").value);
 
     let generatedDates = [];
-    for (let m = 0; m < 4; m++) {
+    for (let m = 0; m < 6; m++) { // 6개월 생성
       let curMonth = month - 1 + m;
       let d = new Date(year, curMonth, 1);
       while (d.getMonth() === (curMonth % 12)) {
@@ -690,6 +894,8 @@
           talkTitle: "",
           speaker: "",
           congregation: "",
+          phone: "",
+          inviter: "",
           chairman: "",
           reader: "",
           notes: ""
@@ -701,9 +907,9 @@
     if (addedCount > 0) {
       schedules.sort((a,b) => a.date.localeCompare(b.date));
       await syncToCloud();
-      alert(`4개월 슬롯 ${addedCount}개가 생성되었습니다.`);
+      alert(`6개월 집회 슬롯 ${addedCount}개가 생성되었습니다.`);
     } else {
-      alert("해당 기간의 일정이 이미 모두 생성되어 있습니다.");
+      alert("해당 6개월 기간의 일정이 이미 모두 생성되어 있습니다.");
     }
   }
 
@@ -721,6 +927,8 @@
       talkTitle: document.getElementById("formTalkTitle").value,
       speaker: document.getElementById("formSpeaker").value,
       congregation: document.getElementById("formCongregation").value,
+      phone: document.getElementById("formPhone").value.trim(),
+      inviter: document.getElementById("formInviter").value.trim(),
       chairman: document.getElementById("formChairman").value,
       reader: document.getElementById("formReader").value,
       notes: document.getElementById("formNotes").value
@@ -748,7 +956,7 @@
   }
 
   async function deleteSchedule(docId) {
-    if (confirm("해당 일정을 삭제하시겠습니까?")) {
+    if (confirm("해당 강연 일정을 삭제하시겠습니까?")) {
       try {
         schedules = schedules.filter(s => s.id !== docId);
         await syncToCloud();
@@ -769,6 +977,8 @@
     document.getElementById("formTalkTitle").value = item.talkTitle || "";
     document.getElementById("formSpeaker").value = item.speaker || "";
     document.getElementById("formCongregation").value = item.congregation || "";
+    document.getElementById("formPhone").value = item.phone || "";
+    document.getElementById("formInviter").value = item.inviter || "";
     document.getElementById("formChairman").value = item.chairman || "";
     document.getElementById("formReader").value = item.reader || "";
     document.getElementById("formNotes").value = item.notes || "";
@@ -880,6 +1090,7 @@
     closeModal("talkPickerModal");
   }
 
+  // 4. 이력 검색 탭
   function filterHistory() {
     const q = (document.getElementById("searchKeyword")?.value || "").trim().toLowerCase();
     const cat = document.getElementById("filterCategory")?.value || "";
@@ -896,13 +1107,14 @@
         (item.talkNo && item.talkNo.toString().includes(q)) ||
         (item.talkTitle && item.talkTitle.toLowerCase().includes(q)) ||
         (item.speaker && item.speaker.toLowerCase().includes(q)) ||
-        (item.congregation && item.congregation.toLowerCase().includes(q));
+        (item.congregation && item.congregation.toLowerCase().includes(q)) ||
+        (item.inviter && item.inviter.toLowerCase().includes(q));
       return matchType && matchText;
     });
 
     if (filtered.length === 0) {
       const emptyMsg = `<div style="text-align:center; padding:30px; color:var(--text-muted);">조건에 일치하는 기록이 없습니다.</div>`;
-      tbody.innerHTML = `<tr><td colspan="7">${emptyMsg}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8">${emptyMsg}</td></tr>`;
       mContainer.innerHTML = emptyMsg;
       return;
     }
@@ -919,8 +1131,9 @@
         <td class="center">${item.speaker || '-'}</td>
         <td class="center" style="color:var(--text-muted);">${item.congregation || '-'}</td>
         <td style="font-weight:500;"><strong>${item.talkTitle || '-'}</strong></td>
+        <td class="center">${item.phone ? `<a href="tel:${item.phone}" style="color:var(--primary); text-decoration:none;">${item.phone}</a>` : '-'}</td>
         <td class="center">${item.chairman || '-'}</td>
-        <td class="center">${item.reader || '-'}</td>
+        <td class="center">${item.inviter || '-'}</td>
       `;
       tbody.appendChild(tr);
 
@@ -935,8 +1148,11 @@
         <div class="card-talk">🎤 ${item.talkTitle || '-'}</div>
         <div class="card-speaker">👤 연사: <strong>${item.speaker || '-'}</strong> (${item.congregation || '-'})</div>
         <div class="card-duty">
-          <span>사회: <b>${item.chairman || '-'}</b></span>
-          <span>낭독: <b>${item.reader || '-'}</b></span>
+          <span>연락처: ${item.phone ? `<a href="tel:${item.phone}" style="color:var(--primary); font-weight:700; text-decoration:none;">${item.phone}</a>` : '미입력'}</span>
+          <div style="display:flex; justify-content:space-between;">
+            <span>초대자: <b>${item.inviter || '-'}</b></span>
+            <span>사회자: <b>${item.chairman || '-'}</b></span>
+          </div>
         </div>
       `;
       mContainer.appendChild(card);
