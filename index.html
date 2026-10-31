@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>회중 공개강연 계획표 및 연제 관리 (Firebase 클라우드)</title>
+  <title>회중 공개강연 계획표 및 연제 관리 (클라우드 연동)</title>
   <style>
     :root {
       --primary: #2563eb;
@@ -21,16 +21,18 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
     body { background-color: var(--bg); color: var(--text); line-height: 1.5; padding: 20px; }
-    .container { max-width: 1240px; margin: 0 auto; }
+    .container { max-width: 1240px; margin: 0 auto; position: relative; z-index: 1; }
 
     header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid var(--border); }
-    h1 { font-size: 1.6rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px; }
+    h1 { font-size: 1.5rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 10px; }
     .header-actions { display: flex; gap: 8px; }
 
-    .sync-status { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 500; padding: 3px 9px; border-radius: 9999px; background: #e2e8f0; color: #475569; }
+    .sync-status { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 600; padding: 4px 10px; border-radius: 9999px; background: #e2e8f0; color: #475569; }
     .sync-status.online { background: #dcfce7; color: #15803d; }
+    .sync-status.error { background: #fee2e2; color: #b91c1c; }
     .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
     .sync-status.online .sync-dot { background: var(--success); }
+    .sync-status.error .sync-dot { background: var(--danger); }
 
     button { cursor: pointer; padding: 8px 14px; border-radius: 6px; border: 1px solid transparent; font-weight: 600; font-size: 0.88rem; transition: 0.15s ease-in-out; display: inline-flex; align-items: center; gap: 6px; }
     .btn-primary { background-color: var(--primary); color: #fff; }
@@ -64,9 +66,21 @@
     .badge-outgoing { background-color: #fef3c7; color: #92400e; }
     .badge-special { background-color: #f3e8ff; color: #6b21a8; }
 
-    /* 모달 */
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
-    .modal-backdrop.show { display: flex; }
+    /* 모달 클릭 가림 방지 (핵심 수정) */
+    .modal-backdrop { 
+      position: fixed; 
+      inset: 0; 
+      background: rgba(0,0,0,0.5); 
+      display: none; 
+      align-items: center; 
+      justify-content: center; 
+      z-index: 1000; 
+      pointer-events: none; /* 닫혀있을 때 화면 클릭 차단 방지 */
+    }
+    .modal-backdrop.show { 
+      display: flex !important; 
+      pointer-events: auto !important; /* 열렸을 때만 모달 터치/클릭 활성화 */
+    }
     .modal { background: #fff; width: 90%; max-width: 720px; max-height: 85vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
     .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
     .modal-body { padding: 20px; overflow-y: auto; }
@@ -77,7 +91,6 @@
     .talk-item:hover { background: #eff6ff; border-color: var(--primary); }
     .talk-no { font-weight: 700; color: var(--primary); min-width: 50px; }
 
-    /* A4 가로 인쇄 서식 */
     @media print {
       @page { size: A4 landscape; margin: 10mm; }
       body { background: #fff; padding: 0; color: #000; }
@@ -105,24 +118,23 @@
         공개강연 계획표 및 연제 관리
         <span class="sync-status" id="syncStatus"><span class="sync-dot"></span>클라우드 연결 중...</span>
       </h1>
-      <p style="font-size:0.88rem; color:var(--text-muted); margin-top:2px;">Firebase Cloud Firestore 실시간 연동</p>
+      <p style="font-size:0.88rem; color:var(--text-muted); margin-top:2px;">회중 공개강연 일정 클라우드 실시간 동기화 (love-d0dcf)</p>
     </div>
     <div class="header-actions no-print">
-      <button class="btn-outline" onclick="openTalkPickerModal()">📖 1~194번 연제 목록</button>
-      <button class="btn-print" onclick="window.print()">🖨️ 계획표 인쇄 / PDF</button>
-      <button class="btn-outline" onclick="exportData()">💾 백업(JSON)</button>
+      <button type="button" class="btn-outline" onclick="openTalkPickerModal()">📖 1~194번 연제 전체보기</button>
+      <button type="button" class="btn-print" onclick="window.print()">🖨️ 계획표 인쇄 / PDF 저장</button>
+      <button type="button" class="btn-outline" onclick="exportData()">💾 백업(JSON)</button>
     </div>
   </header>
 
-  <!-- 인쇄용 타이틀 -->
   <div class="print-header">
     <h2>회중 공개강연 계획표</h2>
     <p id="printPeriod">기간: 4개월 계획표</p>
   </div>
 
   <div class="nav-tabs no-print">
-    <button class="tab-btn active" onclick="switchTab('scheduleTab')">📅 4개월 계획표</button>
-    <button class="tab-btn" onclick="switchTab('historyTab')">🔍 연제 및 연사 이력 검색</button>
+    <button type="button" class="tab-btn active" onclick="switchTab('scheduleTab', event)">📅 4개월 계획표</button>
+    <button type="button" class="tab-btn" onclick="switchTab('historyTab', event)">🔍 연제 및 연사 이력 검색</button>
   </div>
 
   <!-- 탭 1: 4개월 계획표 -->
@@ -137,10 +149,10 @@
             <option value="0">일요일</option>
             <option value="6">토요일</option>
           </select>
-          <button class="btn-outline" onclick="generate4MonthsSlots()">⚡ 4개월 빈 슬롯 일괄 생성</button>
+          <button type="button" class="btn-outline" onclick="generate4MonthsSlots()">⚡ 4개월 빈 슬롯 일괄 생성</button>
         </div>
         <div>
-          <button class="btn-primary" onclick="openScheduleModal()">+ 강연 일정 추가</button>
+          <button type="button" class="btn-primary" onclick="openScheduleModal()">+ 강연 일정 추가</button>
         </div>
       </div>
     </div>
@@ -161,7 +173,7 @@
           </tr>
         </thead>
         <tbody id="scheduleBody">
-          <tr><td colspan="9" style="text-align:center; padding:30px; color:var(--text-muted);">데이터를 불러오는 중입니다...</td></tr>
+          <tr><td colspan="9" style="text-align:center; padding:30px; color:var(--text-muted);">클라우드 데이터를 불러오는 중입니다...</td></tr>
         </tbody>
       </table>
     </div>
@@ -194,7 +206,7 @@
             <th>강연 제목</th>
             <th style="width: 120px;">연사</th>
             <th style="width: 140px;">소속 회중</th>
-            <th>비고 / 안내 사항</th>
+            <th>비고 (식사/사회자 등)</th>
           </tr>
         </thead>
         <tbody id="historyBody"></tbody>
@@ -208,7 +220,7 @@
   <div class="modal">
     <div class="modal-header">
       <h3 id="modalTitle">강연 일정 등록</h3>
-      <button style="border:none; background:none; font-size:1.2rem; cursor:pointer;" onclick="closeModal('scheduleModal')">✕</button>
+      <button type="button" style="border:none; background:none; font-size:1.2rem; cursor:pointer;" onclick="closeModal('scheduleModal')">✕</button>
     </div>
     <div class="modal-body">
       <form id="scheduleForm" onsubmit="saveSchedule(event)">
@@ -224,7 +236,7 @@
               <option value="초대 연사">초대 연사 (방문)</option>
               <option value="자체 연사">자체 연사</option>
               <option value="외부 파견">외부 파견 (출타)</option>
-              <option value="대회/특별">대회 / 특별 집회</option>
+              <option value="대회/특별">순회대회/지역대회/특별집회</option>
             </select>
           </div>
         </div>
@@ -264,8 +276,8 @@
         </div>
 
         <div>
-          <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">비고 / 식사 대접 안내</label>
-          <input type="text" id="formNotes" placeholder="식사 대접 가정, 특별 안내사항" style="width:100%;">
+          <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">비고 / 식사 대접 / 안내 사항</label>
+          <input type="text" id="formNotes" placeholder="식사 대접 가정, 교통편 등" style="width:100%;">
         </div>
 
         <div class="modal-footer" style="padding-right:0; padding-bottom:0; margin-top:16px;">
@@ -282,21 +294,51 @@
   <div class="modal" style="max-width:800px;">
     <div class="modal-header">
       <h3>공개강연 연제 데이터베이스 (1번~194번)</h3>
-      <button style="border:none; background:none; font-size:1.2rem; cursor:pointer;" onclick="closeModal('talkPickerModal')">✕</button>
+      <button type="button" style="border:none; background:none; font-size:1.2rem; cursor:pointer;" onclick="closeModal('talkPickerModal')">✕</button>
     </div>
     <div style="padding:12px 20px; border-bottom:1px solid var(--border);">
-      <input type="text" id="talkSearchInput" placeholder="연제 번호 또는 단어 검색 (예: 가정, 평화, 부활)..." style="width:100%;" oninput="renderTalkList()">
+      <input type="text" id="talkSearchInput" placeholder="연제 번호 또는 단어 검색 (예: 가정, 평화, 35, 부활)..." style="width:100%;" oninput="renderTalkList()">
     </div>
     <div class="modal-body" id="talkListContainer"></div>
     <div class="modal-footer">
-      <button class="btn-outline" onclick="closeModal('talkPickerModal')">닫기</button>
+      <button type="button" class="btn-outline" onclick="closeModal('talkPickerModal')">닫기</button>
     </div>
   </div>
 </div>
 
-<!-- Firebase 모듈 및 앱 로직 -->
+<!-- 기본 브릿지 스크립트 (모듈 로드 전에도 클릭 함수가 작동하도록 사전 정의) -->
+<script>
+  window.switchTab = function(tabId, e) {
+    document.querySelectorAll(".tab-content").forEach(el => el.style.display = "none");
+    document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+    const target = document.getElementById(tabId);
+    if (target) target.style.display = "block";
+    if (e && e.target) e.target.classList.add("active");
+    if (tabId === 'historyTab' && typeof window.filterHistory === 'function') window.filterHistory();
+  };
+
+  window.openScheduleModal = function() {
+    const m = document.getElementById("scheduleModal");
+    if (m) m.classList.add("show");
+  };
+
+  window.closeModal = function(id) {
+    const m = document.getElementById(id);
+    if (m) m.classList.remove("show");
+  };
+
+  window.openTalkPickerModal = function() {
+    const m = document.getElementById("talkPickerModal");
+    if (m) {
+      m.classList.add("show");
+      if (typeof window.renderTalkList === 'function') window.renderTalkList();
+    }
+  };
+</script>
+
+<!-- Firebase SDK 및 비즈니스 로직 -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
   import { 
     getFirestore, 
     collection, 
@@ -308,23 +350,21 @@
     writeBatch, 
     query, 
     orderBy 
-  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
-  // ★ 여기에 본인의 Firebase 콘솔 설정 정보를 입력하세요 ★
   const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyCdZlSMTeiZvmN_qn4Yqva06NE_NR7QB7I",
+    authDomain: "love-d0dcf.firebaseapp.com",
+    projectId: "love-d0dcf",
+    storageBucket: "love-d0dcf.firebasestorage.app",
+    messagingSenderId: "1040684162668",
+    appId: "1:1040684162668:web:a2b09db58fa6309e430249"
   };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const schedulesCol = collection(db, "public_talk_schedules");
 
-  // 1번 ~ 194번 연제 DB
   const TALK_DB = {
     1: "당신은 하느님을 얼마나 잘 아는가?", 2: "당신은 마지막 날의 생존자가 될 것인가?", 3: "여호와의 연합된 조직과 함께 전진하라",
     4: "우리 주위 세계에 나타나 있는 하느님에 대한 증거", 5: "행복한 가정생활을 위한 확실한 조언", 6: "노아 시대의 홍수와 당신",
@@ -363,7 +403,7 @@
     103: "어떻게 진정한 기쁨을 누릴 수 있는가?", 104: "부모 여러분—여러분은 내화 재료로 건축하고 있습니까?", 105: "모든 환난 중에 위로를 받음",
     106: "땅을 파멸시키는 일로 인해 오게 될 하느님의 보응", 107: "당신은 훈련받은 양심을 통해 유익을 얻고 있는가?", 108: "당신도 확신을 가지고 미래를 맞이할 수 있다!",
     109: "하느님의 왕국은 가까웠다", 110: "하느님을 첫째 자리에 둘 때 가정 생활에서 성공할 수 있다", 111: "인류를 완전히 치료하는 일—어떻게 가능한가?",
-    112: "이기적인 세상에서 사랑을 나타내 방법", 113: "청소년들은 어떻게 행복하고 성공적인 삶을 살 수 있는가?", 114: "하느님의 경이로운 창조물들을 인식함",
+    112: "이기적인 세상에서 사랑을 나타내는 방법", 113: "청소년들은 어떻게 행복하고 성공적인 삶을 살 수 있는가?", 114: "하느님의 경이로운 창조물들을 인식함",
     115: "사탄의 교활한 행위로부터 자신을 보호하십시오", 116: "친구를 지혜롭게 선택하라!", 117: "선으로 악을 이기는 방법",
     118: "여호와의 관점에서 청소년을 바라봄", 119: "그리스도인은 세상과 분리되어 있다—그것이 유익한 이유", 120: "지금 하느님의 통치권에 복종해야 하는 이유",
     121: "세계적인 형제들로 이루어진 조직과 함께 대재난에서 생존하십시오", 122: "세계 평화—무슨 근원으로부터?", 123: "그리스도인들이 달라야 하는 이유",
@@ -384,19 +424,18 @@
     166: "진정한 믿음이란 무엇이며 어떻게 나타낼 수 있는가?", 167: "무분별한 세상에서 지혜롭게 행동하라", 168: "이 혼란스러운 세상에서도 안전을 느낄 수 있다!",
     169: "왜 성서의 인도를 받아야 하는가?", 170: "누가 인류를 통치할 자격이 있는가?", 171: "당신도 지금부터 영원히 평화로운 삶을 누릴 수 있다!",
     172: "우리는 하느님 앞에서 어떤 신분을 가지고 있는가?", 173: "하느님의 관점에서 참종교가 과연 있는가?", 174: "하느님의 신세계—누가 들어갈 수 있는가?",
-    175: "성서가 하느님의 말씀이라는 증거는 무엇인가?", 176: "진정한 평화와 안전—언제 있을 것인가?", 177: "고난의 때에 어디에서 도움을 얻을 수 있는가?",
-    178: "충절의 길로 걸으라", 179: "세상의 환상적인 것을 멀리하고, 왕국의 실제적인 것을 추구하라", 180: "부활 희망이 우리 자신에게 실제적이어야 하는 이유",
-    181: "끝은 우리가 생각하는 것보다 가까운가?", 182: "하느님의 왕국이 지금 우리를 위해 하고 있는 일", 183: "무가치한 것들을 보지 말고 물리치십시오!",
-    184: "죽으면 모든 것이 끝나는가?", 185: "진리가 우리의 생활에 영향을 미치는가?", 186: "하느님의 행복한 백성과 연합하십시오",
-    187: "사랑의 하느님께서 왜 악을 허용하시는가?", 188: "당신은 여호와께 확신을 두고 있는가?", 189: "하느님과 함께 걸으면 지금부터 영원히 축복을 받는다",
-    190: "하느님께서 약속하신 완전하고 행복한 가정", 191: "사랑과 믿음이 세상을 이기는 방법", 192: "당신은 영원한 생명에 이르는 길을 걷고 있는가?",
-    193: "세계적 고난의 때에 있을 구출", 194: "경건한 지혜는 우리에게 어떻게 유익을 주는가?"
+    175: "성서가 하느님의 말씀이라는 증거는 무엇인가?", 176: "진정한 평화와 안전—언제 있을 것인가?",
+    177: "고난의 때에 어디에서 도움을 얻을 수 있는가?", 178: "충절의 길로 걸으라", 179: "세상의 환상적인 것을 멀리하고, 왕국의 실제적인 것을 추구하라",
+    180: "부활 희망이 우리 자신에게 실제적이어야 하는 이유", 181: "끝은 우리가 생각하는 것보다 가까운가?", 182: "하느님의 왕국이 지금 우리를 위해 하고 있는 일",
+    183: "무가치한 것들을 보지 말고 물리치십시오!", 184: "죽으면 모든 것이 끝나는가?", 185: "진리가 우리의 생활에 영향을 미치는가?",
+    186: "하느님의 행복한 백성과 연합하십시오", 187: "사랑의 하느님께서 왜 악을 허용하시는가?", 188: "당신은 여호와께 확신을 두고 있는가?",
+    189: "하느님과 함께 걸으면 지금부터 영원히 축복을 받는다", 190: "하느님께서 약속하신 완전하고 행복한 가정", 191: "사랑과 믿음이 세상을 이기는 방법",
+    192: "당신은 영원한 생명에 이르는 길을 걷고 있는가?", 193: "세계적 고난의 때에 있을 구출", 194: "경건한 지혜는 우리에게 어떻게 유익을 주는가?"
   };
 
   let schedules = [];
   let pickerTargetIsForm = false;
 
-  // Firestore 실시간 리스너 (실시간 양방향 동기화)
   const q = query(schedulesCol, orderBy("date", "asc"));
   onSnapshot(q, (snapshot) => {
     schedules = [];
@@ -405,25 +444,21 @@
     });
     
     const syncStatusEl = document.getElementById("syncStatus");
-    syncStatusEl.className = "sync-status online";
-    syncStatusEl.innerHTML = `<span class="sync-dot"></span>클라우드 동기화 완료`;
+    if (syncStatusEl) {
+      syncStatusEl.className = "sync-status online";
+      syncStatusEl.innerHTML = `<span class="sync-dot"></span>클라우드 연결됨`;
+    }
     
-    renderSchedules();
-    filterHistory();
+    window.renderSchedules();
+    window.filterHistory();
   }, (err) => {
-    console.error("Firestore Error:", err);
+    console.error("Firebase Sync Error:", err);
     const syncStatusEl = document.getElementById("syncStatus");
-    syncStatusEl.className = "sync-status";
-    syncStatusEl.innerHTML = `<span class="sync-dot" style="background:var(--danger)"></span>연결 실패: API 키 확인 필요`;
+    if (syncStatusEl) {
+      syncStatusEl.className = "sync-status error";
+      syncStatusEl.innerHTML = `<span class="sync-dot"></span>연결 실패`;
+    }
   });
-
-  // 전역 함수 등록
-  window.switchTab = function(tabId) {
-    document.querySelectorAll(".tab-content").forEach(el => el.style.display = "none");
-    document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
-    document.getElementById(tabId).style.display = "block";
-    event.target.classList.add("active");
-  };
 
   window.getBadgeClass = function(type) {
     switch(type) {
@@ -437,6 +472,7 @@
 
   window.renderSchedules = function() {
     const tbody = document.getElementById("scheduleBody");
+    if (!tbody) return;
     tbody.innerHTML = "";
 
     if (schedules.length === 0) {
@@ -458,7 +494,7 @@
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td><strong>${item.date}</strong></td>
-        <td><span class="badge ${getBadgeClass(item.type)}">${item.type}</span></td>
+        <td><span class="badge ${window.getBadgeClass(item.type)}">${item.type}</span></td>
         <td style="font-weight:600; color:var(--primary);">${item.talkNo ? item.talkNo + '번' : '-'}</td>
         <td><strong>${item.talkTitle || '-'}</strong></td>
         <td>${item.speaker || '-'}</td>
@@ -466,19 +502,19 @@
         <td>${item.chairman || '-'}</td>
         <td>${item.reader || '-'}</td>
         <td class="action-cell">
-          <button class="btn-outline" style="padding:3px 8px; font-size:0.75rem;" onclick="editSchedule('${item.id}')">수정</button>
-          <button class="btn-danger" style="padding:3px 8px; font-size:0.75rem;" onclick="deleteSchedule('${item.id}')">삭제</button>
+          <button type="button" class="btn-outline" style="padding:3px 8px; font-size:0.75rem;" onclick="editSchedule('${item.id}')">수정</button>
+          <button type="button" class="btn-danger" style="padding:3px 8px; font-size:0.75rem;" onclick="deleteSchedule('${item.id}')">삭제</button>
         </td>
       `;
       tbody.appendChild(tr);
     });
 
-    if (schedules.length > 0) {
-      document.getElementById("printPeriod").innerText = `계획 기간: ${schedules[0].date} ~ ${schedules[schedules.length-1].date}`;
+    const printPeriod = document.getElementById("printPeriod");
+    if (printPeriod && schedules.length > 0) {
+      printPeriod.innerText = `계획 기간: ${schedules[0].date} ~ ${schedules[schedules.length-1].date}`;
     }
   };
 
-  // 4개월 슬롯 자동 일괄 생성 (Firestore Batch 쓰기)
   window.generate4MonthsSlots = async function() {
     const startVal = document.getElementById("scheduleStartMonth").value;
     if (!startVal) return alert("시작 년월을 선택해주세요.");
@@ -522,9 +558,9 @@
 
     if (addedCount > 0) {
       await batch.commit();
-      alert(`4개월간의 집회 슬롯 ${addedCount}개가 클라우드에 생성되었습니다.`);
+      alert(`4개월간의 집회 슬롯 ${addedCount}개가 생성되었습니다.`);
     } else {
-      alert("해당 기간의 날짜 슬롯이 이미 모두 등록되어 있습니다.");
+      alert("선택한 기간의 슬롯이 이미 모두 등록되어 있습니다.");
     }
   };
 
@@ -555,7 +591,7 @@
         data.createdAt = new Date();
         await addDoc(schedulesCol, data);
       }
-      closeModal("scheduleModal");
+      window.closeModal("scheduleModal");
     } catch (err) {
       alert("저장 실패: " + err.message);
     } finally {
@@ -565,7 +601,7 @@
   };
 
   window.deleteSchedule = async function(docId) {
-    if (confirm("해당 강연 일정을 클라우드에서 삭제하시겠습니까?")) {
+    if (confirm("해당 일정을 삭제하시겠습니까?")) {
       try {
         await deleteDoc(doc(db, "public_talk_schedules", docId));
       } catch (err) {
@@ -589,22 +625,9 @@
     document.getElementById("formReader").value = item.reader || "";
     document.getElementById("formNotes").value = item.notes || "";
     document.getElementById("modalTitle").innerText = "강연 일정 수정";
-    openScheduleModal(true);
-    if (item.talkNo) checkDuplicate(parseInt(item.talkNo, 10));
-  };
-
-  window.openScheduleModal = function(isEdit = false) {
+    
     document.getElementById("scheduleModal").classList.add("show");
-    if (!isEdit) {
-      document.getElementById("scheduleForm").reset();
-      document.getElementById("editDocId").value = "";
-      document.getElementById("modalTitle").innerText = "강연 일정 등록";
-      document.getElementById("duplicateWarning").style.display = "none";
-    }
-  };
-
-  window.closeModal = function(id) {
-    document.getElementById(id).classList.remove("show");
+    if (item.talkNo) checkDuplicate(parseInt(item.talkNo, 10));
   };
 
   window.onTalkNoInput = function(val) {
@@ -632,24 +655,17 @@
     }
   }
 
-  // 연제 피커 모달
-  window.openTalkPickerModal = function() {
-    pickerTargetIsForm = false;
-    document.getElementById("talkSearchInput").value = "";
-    renderTalkList();
-    document.getElementById("talkPickerModal").classList.add("show");
-  };
-
   window.openTalkPickerForForm = function() {
     pickerTargetIsForm = true;
     document.getElementById("talkSearchInput").value = "";
-    renderTalkList();
+    window.renderTalkList();
     document.getElementById("talkPickerModal").classList.add("show");
   };
 
   window.renderTalkList = function() {
-    const q = document.getElementById("talkSearchInput").value.trim().toLowerCase();
+    const q = (document.getElementById("talkSearchInput")?.value || "").trim().toLowerCase();
     const container = document.getElementById("talkListContainer");
+    if (!container) return;
     container.innerHTML = "";
 
     const listDiv = document.createElement("div");
@@ -687,15 +703,14 @@
       document.getElementById("formTalkTitle").value = title;
       checkDuplicate(num);
     } else {
-      openScheduleModal();
+      window.openScheduleModal();
       document.getElementById("formTalkNo").value = num;
       document.getElementById("formTalkTitle").value = title;
       checkDuplicate(num);
     }
-    closeModal("talkPickerModal");
+    window.closeModal("talkPickerModal");
   }
 
-  // 이력 검색 필터
   window.filterHistory = function() {
     const q = (document.getElementById("searchKeyword")?.value || "").trim().toLowerCase();
     const cat = document.getElementById("filterCategory")?.value || "";
@@ -722,7 +737,7 @@
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td><strong>${item.date}</strong></td>
-        <td><span class="badge ${getBadgeClass(item.type)}">${item.type}</span></td>
+        <td><span class="badge ${window.getBadgeClass(item.type)}">${item.type}</span></td>
         <td style="font-weight:600; color:var(--primary);">${item.talkNo ? item.talkNo + '번' : '-'}</td>
         <td><strong>${item.talkTitle || '-'}</strong></td>
         <td>${item.speaker || '-'}</td>
@@ -733,7 +748,6 @@
     });
   };
 
-  // 백업
   window.exportData = function() {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(schedules, null, 2));
     const dlAnchor = document.createElement("a");
