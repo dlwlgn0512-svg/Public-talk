@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>회중 공개강연 계획표 및 연제 관리</title>
   
+  <!-- 파이어베이스 라이브러리 -->
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+  <!-- 고화질 이미지 캡처 라이브러리 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
@@ -71,6 +73,7 @@
     input, select { padding: 6px 9px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.86rem; outline: none; }
     input:focus, select:focus { border-color: var(--primary); }
 
+    /* 모바일 카드 뷰 */
     .mobile-cards { display: flex; flex-direction: column; gap: 10px; }
     .schedule-card {
       background: #fff;
@@ -98,9 +101,10 @@
     }
     .schedule-card .card-actions { display: flex; justify-content: flex-end; gap: 6px; padding-top: 4px; }
 
+    /* PC / 태블릿 화면 테이블 */
     .table-container { display: none; width: 100%; overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 0.88rem; table-layout: fixed; }
-    th, td { padding: 8px 9px; text-align: left; border-bottom: 1px solid var(--border); overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
+    th, td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--border); overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
     
     th { 
       background-color: var(--header-green); 
@@ -114,10 +118,10 @@
     tr:hover { background-color: #f8fafc; }
     td.center, th.center { text-align: center; }
 
-    .date-cell { white-space: nowrap !important; letter-spacing: -0.3px; }
+    .date-cell { white-space: nowrap !important; letter-spacing: -0.4px; }
     .badge-special { 
       display: inline-block; 
-      padding: 1px 5px; 
+      padding: 1px 4px; 
       border-radius: 4px; 
       font-size: 0.72rem; 
       font-weight: 700; 
@@ -165,7 +169,7 @@
     .talk-no { font-weight: 700; color: var(--primary); min-width: 48px; }
 
     /* ========================================================
-       ★ [인쇄 최적화]: 공백 없이 A4 가로 1장에 꽉 차게 피팅
+       ★ [인쇄 최적화]: 날짜 열 잘림 방지 (너비 16% + 패딩/자간 미세조정)
        ======================================================== */
     .print-only-container { display: none; }
 
@@ -209,13 +213,13 @@
       text-align: center;
       border: 1px solid #c8e6c9;
       border-bottom: 2px solid #81c784;
-      padding: 7px 4px;
+      padding: 7px 2px;
       white-space: nowrap !important;
     }
 
     .print-table td { 
       border: 1px solid #e0e0e0; 
-      padding: 5.8px 6px; /* 행 높이를 확장해 위아래 공백을 꽉 채움 */
+      padding: 5.6px 4px;
       color: #111; 
       vertical-align: middle;
       white-space: normal;
@@ -223,26 +227,31 @@
 
     .print-table tr:nth-child(even) td { background-color: #fafafa; }
     .print-table td.center { text-align: center; }
+
+    /* ★ 날짜 셀: 말줄임표(...) 발생하지 않도록 너비 16%, 좌우 패딩 2px, 음수 자간 적용 */
     .print-table .date-col { 
-      font-weight: 700;
-      font-size: 8.8pt;
-      color: #1e293b;
+      font-weight: 700 !important;
+      font-size: 8.4pt !important;
+      color: #1e293b !important;
       white-space: nowrap !important;
-      letter-spacing: -0.2px;
+      letter-spacing: -0.6px !important;
+      text-overflow: clip !important;
+      padding-left: 2px !important;
+      padding-right: 2px !important;
     }
-    .print-table .talk-no-col { font-weight: 800; color: #1565c0; font-size: 9pt; }
-    .print-table .title-col { font-weight: 600; color: #111; text-align: left; padding-left: 10px; font-size: 8.8pt; }
+    .print-table .talk-no-col { font-weight: 800; color: #1565c0; font-size: 8.8pt; }
+    .print-table .title-col { font-weight: 600; color: #111; text-align: left; padding-left: 8px; font-size: 8.6pt; }
     .print-table .empty-cell { color: transparent !important; }
     .print-badge-special { 
       display: inline-block;
       border: 1px solid #d97706; 
       background: #fffbeb; 
       color: #b45309; 
-      font-size: 7.2pt; 
+      font-size: 6.8pt; 
       font-weight: 700; 
-      padding: 0 4px; 
+      padding: 0 3px; 
       border-radius: 3px; 
-      margin-left: 4px; 
+      margin-left: 2px; 
     }
 
     @media print {
@@ -291,7 +300,7 @@
     <button type="button" class="tab-btn" onclick="switchTab('historyTab', event)">🔍 연제/연사 이력 검색</button>
   </div>
 
-  <!-- A4 가로 인쇄 전용 영역 -->
+  <!-- A4 가로 인쇄 전용 영역 (날짜 열 너비를 16%로 확대) -->
   <div class="print-only-container">
     <div class="print-header-box">
       <h2>회중 공개강연 계획표</h2>
@@ -300,11 +309,11 @@
     <table class="print-table">
       <thead>
         <tr>
-          <th style="width: 14%;">날짜</th>
-          <th style="width: 8%;">번호</th>
+          <th style="width: 16%;">날짜</th>
+          <th style="width: 7.5%;">번호</th>
           <th style="width: 10%;">연사</th>
-          <th style="width: 12%;">회중</th>
-          <th style="width: 36%;">연설주제</th>
+          <th style="width: 11.5%;">회중</th>
+          <th style="width: 35%;">연설주제</th>
           <th style="width: 10%;">사회자</th>
           <th style="width: 10%;">낭독자</th>
         </tr>
@@ -322,11 +331,11 @@
     <table class="print-table">
       <thead>
         <tr>
-          <th style="width: 14%;">날짜</th>
-          <th style="width: 8%;">번호</th>
+          <th style="width: 16%;">날짜</th>
+          <th style="width: 7.5%;">번호</th>
           <th style="width: 10%;">연사</th>
-          <th style="width: 12%;">회중</th>
-          <th style="width: 36%;">연설주제</th>
+          <th style="width: 11.5%;">회중</th>
+          <th style="width: 35%;">연설주제</th>
           <th style="width: 10%;">사회자</th>
           <th style="width: 10%;">낭독자</th>
         </tr>
@@ -362,11 +371,11 @@
       <table id="scheduleTable">
         <thead>
           <tr>
-            <th class="center" style="width: 14%;">날짜</th>
+            <th class="center" style="width: 15%;">날짜</th>
             <th class="center" style="width: 8%;">번호</th>
             <th class="center" style="width: 10%;">연사</th>
             <th class="center" style="width: 12%;">회중</th>
-            <th style="width: 36%;">연설주제</th>
+            <th style="width: 35%;">연설주제</th>
             <th class="center" style="width: 10%;">사회자</th>
             <th class="center" style="width: 10%;">낭독자</th>
             <th class="action-cell center" style="width: 78px;">관리</th>
@@ -440,11 +449,11 @@
       <table id="historyTable">
         <thead>
           <tr>
-            <th class="center" style="width: 13%;">날짜</th>
+            <th class="center" style="width: 14%;">날짜</th>
             <th class="center" style="width: 7%;">번호</th>
             <th class="center" style="width: 10%;">연사</th>
             <th class="center" style="width: 11%;">회중</th>
-            <th style="width: 33%;">연설주제</th>
+            <th style="width: 32%;">연설주제</th>
             <th class="center" style="width: 12%;">연사 전화번호</th>
             <th class="center" style="width: 9%;">사회자</th>
             <th class="center" style="width: 10%;">초대자</th>
