@@ -168,9 +168,7 @@
     .talk-item:hover { background: #eff6ff; border-color: var(--primary); }
     .talk-no { font-weight: 700; color: var(--primary); min-width: 48px; }
 
-    /* ========================================================
-       ★ [인쇄 최적화]: 날짜 열 잘림 방지 (너비 16% + 패딩/자간 미세조정)
-       ======================================================== */
+    /* 인쇄 최적화 (후대 열 추가 반영: 날짜 13%, 번호 7%, 연사 9%, 회중 10%, 연설주제 33%, 사회자 9%, 낭독자 9%, 후대 10%) */
     .print-only-container { display: none; }
 
     .print-header-box {
@@ -208,7 +206,7 @@
     .print-table th { 
       background-color: #e8f5e9; 
       color: #1b5e20;
-      font-size: 10pt;
+      font-size: 9.5pt;
       font-weight: 800;
       text-align: center;
       border: 1px solid #c8e6c9;
@@ -228,28 +226,26 @@
     .print-table tr:nth-child(even) td { background-color: #fafafa; }
     .print-table td.center { text-align: center; }
 
-    /* ★ 날짜 셀: 말줄임표(...) 발생하지 않도록 너비 16%, 좌우 패딩 2px, 음수 자간 적용 */
     .print-table .date-col { 
       font-weight: 700 !important;
-      font-size: 8.4pt !important;
+      font-size: 8.2pt !important;
       color: #1e293b !important;
       white-space: nowrap !important;
-      letter-spacing: -0.6px !important;
-      text-overflow: clip !important;
+      letter-spacing: -0.5px !important;
       padding-left: 2px !important;
       padding-right: 2px !important;
     }
-    .print-table .talk-no-col { font-weight: 800; color: #1565c0; font-size: 8.8pt; }
-    .print-table .title-col { font-weight: 600; color: #111; text-align: left; padding-left: 8px; font-size: 8.6pt; }
+    .print-table .talk-no-col { font-weight: 800; color: #1565c0; font-size: 8.6pt; }
+    .print-table .title-col { font-weight: 600; color: #111; text-align: left; padding-left: 6px; font-size: 8.2pt; }
     .print-table .empty-cell { color: transparent !important; }
     .print-badge-special { 
       display: inline-block;
       border: 1px solid #d97706; 
       background: #fffbeb; 
       color: #b45309; 
-      font-size: 6.8pt; 
+      font-size: 6.5pt; 
       font-weight: 700; 
-      padding: 0 3px; 
+      padding: 0 2px; 
       border-radius: 3px; 
       margin-left: 2px; 
     }
@@ -261,13 +257,13 @@
         padding: 0 !important; 
         margin: 0 !important; 
         color: #111 !important;
-        font-size: 8.8pt !important;
+        font-size: 8.4pt !important;
         line-height: 1.25 !important;
         -webkit-print-color-adjust: exact !important; 
         print-color-adjust: exact !important;
       }
 
-      header, .nav-tabs, .toolbar, .no-print, button, .action-cell, .mobile-cards, #managementTab, #historyTab, .tab-content, .update-toast { 
+      header, .nav-tabs, .toolbar, .no-print, button, .action-cell, .mobile-cards, #managementTab, #historyTab, #settingsTab, .tab-content, .update-toast { 
         display: none !important; 
       }
 
@@ -284,7 +280,7 @@
         회중 공개강연 계획표 및 연제 관리
         <span class="sync-status" id="syncStatus"><span class="sync-dot"></span>클라우드 연결 중...</span>
       </h1>
-      <p style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">실시간 양방향 동기화 (love-d0dcf)</p>
+      <p style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">실시간 양방향 동기화 및 7일 자동 백업 (love-d0dcf)</p>
     </div>
     <div class="header-actions no-print">
       <button type="button" class="btn-outline" onclick="openTalkPickerModal()">📖 1~194번 연제</button>
@@ -298,9 +294,10 @@
     <button type="button" class="tab-btn active" onclick="switchTab('scheduleTab', event)">📅 연설 계획표</button>
     <button type="button" class="tab-btn" onclick="switchTab('managementTab', event)">📋 공개강연 관리</button>
     <button type="button" class="tab-btn" onclick="switchTab('historyTab', event)">🔍 연제/연사 이력 검색</button>
+    <button type="button" class="tab-btn" onclick="switchTab('settingsTab', event)">⚙️ 백업 및 설정</button>
   </div>
 
-  <!-- A4 가로 인쇄 전용 영역 (날짜 열 너비를 16%로 확대) -->
+  <!-- A4 가로 인쇄 전용 영역 (후대 열 추가: 날짜 13%, 번호 7%, 연사 9%, 회중 10%, 주제 33%, 사회자 9%, 낭독자 9%, 후대 10%) -->
   <div class="print-only-container">
     <div class="print-header-box">
       <h2>회중 공개강연 계획표</h2>
@@ -309,13 +306,14 @@
     <table class="print-table">
       <thead>
         <tr>
-          <th style="width: 16%;">날짜</th>
-          <th style="width: 7.5%;">번호</th>
-          <th style="width: 10%;">연사</th>
-          <th style="width: 11.5%;">회중</th>
-          <th style="width: 35%;">연설주제</th>
-          <th style="width: 10%;">사회자</th>
-          <th style="width: 10%;">낭독자</th>
+          <th style="width: 13%;">날짜</th>
+          <th style="width: 7%;">번호</th>
+          <th style="width: 9%;">연사</th>
+          <th style="width: 10%;">회중</th>
+          <th style="width: 33%;">연설주제</th>
+          <th style="width: 9%;">사회자</th>
+          <th style="width: 9%;">낭독자</th>
+          <th style="width: 10%;">후대</th>
         </tr>
       </thead>
       <tbody id="printTableBody"></tbody>
@@ -331,13 +329,14 @@
     <table class="print-table">
       <thead>
         <tr>
-          <th style="width: 16%;">날짜</th>
-          <th style="width: 7.5%;">번호</th>
-          <th style="width: 10%;">연사</th>
-          <th style="width: 11.5%;">회중</th>
-          <th style="width: 35%;">연설주제</th>
-          <th style="width: 10%;">사회자</th>
-          <th style="width: 10%;">낭독자</th>
+          <th style="width: 13%;">날짜</th>
+          <th style="width: 7%;">번호</th>
+          <th style="width: 9%;">연사</th>
+          <th style="width: 10%;">회중</th>
+          <th style="width: 33%;">연설주제</th>
+          <th style="width: 9%;">사회자</th>
+          <th style="width: 9%;">낭독자</th>
+          <th style="width: 10%;">후대</th>
         </tr>
       </thead>
       <tbody id="imageCaptureTableBody"></tbody>
@@ -371,18 +370,19 @@
       <table id="scheduleTable">
         <thead>
           <tr>
-            <th class="center" style="width: 15%;">날짜</th>
-            <th class="center" style="width: 8%;">번호</th>
-            <th class="center" style="width: 10%;">연사</th>
-            <th class="center" style="width: 12%;">회중</th>
-            <th style="width: 35%;">연설주제</th>
-            <th class="center" style="width: 10%;">사회자</th>
-            <th class="center" style="width: 10%;">낭독자</th>
+            <th class="center" style="width: 13%;">날짜</th>
+            <th class="center" style="width: 7%;">번호</th>
+            <th class="center" style="width: 9%;">연사</th>
+            <th class="center" style="width: 10%;">회중</th>
+            <th style="width: 31%;">연설주제</th>
+            <th class="center" style="width: 9%;">사회자</th>
+            <th class="center" style="width: 9%;">낭독자</th>
+            <th class="center" style="width: 9%;">후대</th>
             <th class="action-cell center" style="width: 78px;">관리</th>
           </tr>
         </thead>
         <tbody id="scheduleBody">
-          <tr><td colspan="8" style="text-align:center; padding:30px; color:var(--text-muted);">클라우드 데이터를 불러오는 중입니다...</td></tr>
+          <tr><td colspan="9" style="text-align:center; padding:30px; color:var(--text-muted);">클라우드 데이터를 불러오는 중입니다...</td></tr>
         </tbody>
       </table>
     </div>
@@ -412,10 +412,11 @@
             <th class="center" style="width: 7%;">강연 번호</th>
             <th class="center" style="width: 10%;">이름(연사)</th>
             <th class="center" style="width: 11%;">회중</th>
-            <th style="width: 30%;">강연주제</th>
-            <th class="center" style="width: 12%;">연사 전화번호</th>
-            <th class="center" style="width: 9%;">사회자</th>
-            <th class="center" style="width: 11%;">초대자 이름</th>
+            <th style="width: 26%;">강연주제</th>
+            <th class="center" style="width: 11%;">연사 전화번호</th>
+            <th class="center" style="width: 8%;">사회자</th>
+            <th class="center" style="width: 9%;">초대자 이름</th>
+            <th class="center" style="width: 8%;">후대</th>
             <th class="action-cell center" style="width: 78px;">관리</th>
           </tr>
         </thead>
@@ -449,18 +450,38 @@
       <table id="historyTable">
         <thead>
           <tr>
-            <th class="center" style="width: 14%;">날짜</th>
+            <th class="center" style="width: 12%;">날짜</th>
             <th class="center" style="width: 7%;">번호</th>
-            <th class="center" style="width: 10%;">연사</th>
-            <th class="center" style="width: 11%;">회중</th>
-            <th style="width: 32%;">연설주제</th>
-            <th class="center" style="width: 12%;">연사 전화번호</th>
-            <th class="center" style="width: 9%;">사회자</th>
-            <th class="center" style="width: 10%;">초대자</th>
+            <th class="center" style="width: 9%;">연사</th>
+            <th class="center" style="width: 10%;">회중</th>
+            <th style="width: 30%;">연설주제</th>
+            <th class="center" style="width: 11%;">연사 전화번호</th>
+            <th class="center" style="width: 8%;">사회자</th>
+            <th class="center" style="width: 9%;">초대자</th>
+            <th class="center" style="width: 8%;">후대</th>
           </tr>
         </thead>
         <tbody id="historyBody"></tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- 탭 4: 백업 및 설정 (요청하신 7일 주기 백업 및 원클릭 복원) -->
+  <div id="settingsTab" class="tab-content" style="display:none;">
+    <div class="card space-y-4">
+      <h2 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 6px;">클라우드 자동 백업 및 복원 관리</h2>
+      <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 16px;">
+        시스템은 7일마다 자동으로 최신 백업 스냅샷을 하위 컬렉션(<code>backups</code>)에 안전하게 저장하며, 최근 10개만 유지합니다. 필요 시 언제든지 수동으로 백업하거나 원하는 시점으로 되돌릴 수 있습니다.
+      </p>
+
+      <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+        <button type="button" class="btn-primary" onclick="manualBackupNow()">🛡️ 지금 즉시 수동 백업하기</button>
+      </div>
+
+      <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 8px;">보관된 백업 목록 (최근 10개)</h3>
+      <div id="backupListContainer" style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: #fff;">
+        <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.86rem;">백업 목록을 불러오는 중...</div>
+      </div>
     </div>
   </div>
 </div>
@@ -567,9 +588,15 @@
           </div>
         </div>
 
-        <div>
-          <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:3px;">비고 / 식사 안내</label>
-          <input type="text" id="formNotes" placeholder="식사 대접 가정, 교통편 등" style="width:100%;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+          <div>
+            <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:3px;">후대 (형제명)</label>
+            <input type="text" id="formNextSpeaker" placeholder="후대 형제 성명" style="width:100%;">
+          </div>
+          <div>
+            <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:3px;">비고 / 식사 안내</label>
+            <input type="text" id="formNotes" placeholder="식사 대접 가정 등" style="width:100%;">
+          </div>
         </div>
 
         <div class="modal-footer" style="margin-top:14px;">
@@ -604,6 +631,7 @@
 </div>
 
 <script>
+  // Firebase 초기화 및 기존 경로 유지 ([컬렉션명]/mainData)
   const firebaseConfig = {
     apiKey: "AIzaSyCdZlSMTeiZvmN_qn4Yqva06NE_NR7QB7I",
     authDomain: "love-d0dcf.firebaseapp.com",
@@ -617,7 +645,10 @@
     firebase.initializeApp(firebaseConfig);
   }
   const db = firebase.firestore();
-  const TALK_DOC = db.collection("sarangGroup").doc("publicTalkSchedules");
+  
+  // 기존 경로 유지
+  const MAIN_DOC = db.collection("sarangGroup").doc("mainData");
+  const BACKUPS_COL = MAIN_DOC.collection("backups");
 
   const TALK_DB = {
     1: "당신은 하느님을 얼마나 잘 아는가?", 2: "당신은 마지막 날의 생존자가 될 것인가?", 3: "여호와의 연합된 조직과 함께 전진하라",
@@ -696,6 +727,7 @@
   let schedules = [];
   let pickerTargetIsForm = false;
   let isFirstLoad = true;
+  let isServerSynced = false; // ★ 서버 동기화 완료 전 덮어쓰기 방지 잠금 변수
   let currentGeneratedBlob = null;
   let currentGeneratedFilename = "";
 
@@ -726,15 +758,21 @@
     renderSchedules();
   }
 
-  TALK_DOC.onSnapshot((docSnap) => {
+  // ★ 실시간 데이터 로드 및 7일 주기 자동 백업 체크 로직
+  MAIN_DOC.onSnapshot((docSnap) => {
     const syncStatusEl = document.getElementById("syncStatus");
     if (docSnap.exists) {
       const data = docSnap.data();
       schedules = data.items || [];
     } else {
       schedules = [];
-      TALK_DOC.set({ items: [] });
+      // 최초 생성 시 덮어쓰기 방지 잠금 해제 후 초기화
+      isServerSynced = true;
+      MAIN_DOC.set({ items: [], updatedAt: new Date() }, { merge: true });
     }
+
+    // 서버 동기화 완료 플래그 설정 (이후부터 저장 허용)
+    isServerSynced = true;
 
     if (syncStatusEl) {
       syncStatusEl.className = "sync-status online";
@@ -744,6 +782,9 @@
     renderSchedules();
     renderManagementView();
     filterHistory();
+
+    // 7일 주기 자동 백업 체크 수행
+    checkAndRunWeeklyBackup();
 
     if (!isFirstLoad) {
       showUpdateToast();
@@ -758,9 +799,123 @@
     }
   });
 
+  // ★ { merge: true } 옵션을 사용하여 기존 데이터를 날리지 않고 병합 저장
   async function syncToCloud() {
-    await TALK_DOC.set({ items: schedules, updatedAt: new Date() });
+    if (!isServerSynced) {
+      console.warn("서버 데이터가 아직 동기화되지 않아 저장이 차단되었습니다.");
+      return;
+    }
+    await MAIN_DOC.set({ items: schedules, updatedAt: new Date() }, { merge: true });
     showUpdateToast();
+  }
+
+  // ★ 7일 주기 자동 백업 및 최근 10개 유지 로직
+  async function checkAndRunWeeklyBackup() {
+    try {
+      const backupsSnap = await BACKUPS_COL.orderBy("timestamp", "desc").get();
+      const now = new Date().getTime();
+      let shouldBackup = true;
+
+      if (!backupsSnap.empty) {
+        const latestDoc = backupsSnap.docs[0];
+        const latestTime = latestDoc.data().timestamp?.toMillis ? latestDoc.data().timestamp.toMillis() : new Date(latestDoc.data().dateStr).getTime();
+        const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+        
+        // 7일이 경과하지 않았으면 자동 백업 생략
+        if ((now - latestTime) < sevenDaysMs) {
+          shouldBackup = false;
+        }
+      }
+
+      if (shouldBackup && schedules.length > 0) {
+        await executeBackup("자동 백업 (7일 주기)");
+      }
+
+      // 백업 개수 10개 초과 시 오래된 것 삭제
+      const updatedSnap = await BACKUPS_COL.orderBy("timestamp", "desc").get();
+      if (updatedSnap.docs.length > 10) {
+        for (let i = 10; i < updatedSnap.docs.length; i++) {
+          await updatedSnap.docs[i].ref.delete();
+        }
+      }
+
+      renderBackupList();
+    } catch (e) {
+      console.error("자동 백업 체크 중 오류 발생:", e);
+    }
+  }
+
+  async function executeBackup(typeStr) {
+    const dateStr = new Date().toLocaleString('ko-KR');
+    await BACKUPS_COL.add({
+      type: typeStr,
+      dateStr: dateStr,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      items: schedules
+    });
+    renderBackupList();
+  }
+
+  async function manualBackupNow() {
+    try {
+      await executeBackup("수동 백업");
+      alert("현재 데이터가 클라우드 백업(하위 backups)에 성공적으로 저장되었습니다.");
+    } catch (e) {
+      alert("백업 중 오류가 발생했습니다: " + e.message);
+    }
+  }
+
+  // 설정 탭에 백업 목록 렌더링 및 원클릭 복원 기능
+  async function renderBackupList() {
+    const container = document.getElementById("backupListContainer");
+    if (!container) return;
+
+    try {
+      const snap = await BACKUPS_COL.orderBy("timestamp", "desc").limit(10).get();
+      if (snap.empty) {
+        container.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.86rem;">저장된 백업 기록이 없습니다.</div>`;
+        return;
+      }
+
+      let html = `<div style="display: flex; flexDirection: column; divide-y: 1px solid var(--border);">`;
+      snap.forEach(docSnap => {
+        const d = docSnap.data();
+        const count = d.items ? d.items.length : 0;
+        html += `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #f1f5f9;">
+            <div>
+              <div style="font-weight: 700; font-size: 0.88rem; color: #0f172a;">${d.dateStr} <span style="font-size: 0.72rem; padding: 2px 6px; background: #e0f2fe; color: #0369a1; border-radius: 4px; margin-left: 6px;">${d.type}</span></div>
+              <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">저장된 일정 항목 수: ${count}개</div>
+            </div>
+            <button type="button" class="btn-primary" style="padding: 5px 10px; font-size: 0.78rem;" onclick="restoreFromBackup('${docSnap.id}')">이 시점으로 복원</button>
+          </div>
+        `;
+      });
+      html += `</div>`;
+      container.innerHTML = html;
+    } catch (e) {
+      container.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--danger); font-size: 0.86rem;">백업 목록을 불러오지 못했습니다.</div>`;
+    }
+  }
+
+  async function restoreFromBackup(backupId) {
+    if (confirm("정말 이 백업 시점으로 데이터를 복원하시겠습니까?\n현재 입력된 내용이 해당 백업 시점으로 되돌아갑니다.")) {
+      try {
+        const docRef = BACKUPS_COL.doc(backupId);
+        const snap = await docRef.get();
+        if (snap.exists) {
+          const data = snap.data();
+          schedules = data.items || [];
+          await syncToCloud();
+          alert("성공적으로 복원되었습니다!");
+          renderSchedules();
+          renderManagementView();
+          filterHistory();
+        }
+      } catch (e) {
+        alert("복원 중 오류가 발생했습니다: " + e.message);
+      }
+    }
   }
 
   function showUpdateToast() {
@@ -790,6 +945,7 @@
     if (tabId === 'scheduleTab') renderSchedules();
     else if (tabId === 'managementTab') renderManagementView();
     else if (tabId === 'historyTab') filterHistory();
+    else if (tabId === 'settingsTab') renderBackupList();
   }
 
   function fastPrint() {
@@ -798,6 +954,7 @@
     });
   }
 
+  // 1. 연설 계획표 렌더링 (후대 열 포함)
   function renderSchedules() {
     const tbody = document.getElementById("scheduleBody");
     const mobileContainer = document.getElementById("mobileCardsContainer");
@@ -820,10 +977,10 @@
 
     if (filtered.length === 0) {
       const emptyMsg = `<div style="text-align:center; padding:30px; color:var(--text-muted);">${range.start} ~ ${range.end} (6개월) 기간에 등록된 일정이 없습니다.<br>[6개월 슬롯 자동 생성]을 눌러보세요.</div>`;
-      tbody.innerHTML = `<tr><td colspan="8">${emptyMsg}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9">${emptyMsg}</td></tr>`;
       mobileContainer.innerHTML = emptyMsg;
-      printTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;">해당 기간에 일정이 없습니다.</td></tr>`;
-      imgTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;">해당 기간에 일정이 없습니다.</td></tr>`;
+      printTbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">해당 기간에 일정이 없습니다.</td></tr>`;
+      imgTbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">해당 기간에 일정이 없습니다.</td></tr>`;
       return;
     }
 
@@ -837,7 +994,7 @@
       if (currentMonth !== lastMonth) {
         const trDivider = document.createElement("tr");
         trDivider.className = "month-divider";
-        trDivider.innerHTML = `<td colspan="8" style="background:#f1f5f9; font-weight:700; padding:4px 10px; color:#334155;">🗓️ ${currentMonth.replace("-", "년 ")}월</td>`;
+        trDivider.innerHTML = `<td colspan="9" style="background:#f1f5f9; font-weight:700; padding:4px 10px; color:#334155;">🗓️ ${currentMonth.replace("-", "년 ")}월</td>`;
         tbody.appendChild(trDivider);
       }
 
@@ -850,6 +1007,7 @@
         <td style="font-weight:500;"><strong>${item.talkTitle || '-'}</strong></td>
         <td class="center">${item.chairman || '-'}</td>
         <td class="center">${item.reader || '-'}</td>
+        <td class="center">${item.nextSpeaker || '-'}</td>
         <td class="action-cell center">
           <button type="button" class="btn-outline" style="padding:2px 6px; font-size:0.75rem;" onclick="editSchedule('${item.id}')">수정</button>
           <button type="button" class="btn-danger" style="padding:2px 6px; font-size:0.75rem;" onclick="clearScheduleContent('${item.id}')" title="날짜 유지, 내용 초기화">삭제</button>
@@ -865,6 +1023,7 @@
         <td class="title-col ${!item.talkTitle ? 'empty-cell' : ''}">${item.talkTitle || '-'}</td>
         <td class="center ${!item.chairman ? 'empty-cell' : ''}">${item.chairman || '-'}</td>
         <td class="center ${!item.reader ? 'empty-cell' : ''}">${item.reader || '-'}</td>
+        <td class="center ${!item.nextSpeaker ? 'empty-cell' : ''}">${item.nextSpeaker || '-'}</td>
       `;
 
       const pTr = document.createElement("tr");
@@ -896,6 +1055,7 @@
           <div style="display:flex; justify-content:space-between;">
             <span>사회: <b>${item.chairman || '-'}</b></span>
             <span>낭독: <b>${item.reader || '-'}</b></span>
+            <span>후대: <b>${item.nextSpeaker || '-'}</b></span>
           </div>
           ${item.notes ? `<div style="font-size:0.75rem; color:#64748b;">비고: ${item.notes}</div>` : ''}
         </div>
@@ -1001,7 +1161,7 @@
 
     if (filtered.length === 0) {
       const emptyMsg = `<div style="text-align:center; padding:30px; color:var(--text-muted);">${range.start} ~ ${range.end} 기간의 강연 관리 데이터가 없습니다.</div>`;
-      tbody.innerHTML = `<tr><td colspan="9">${emptyMsg}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="10">${emptyMsg}</td></tr>`;
       mobileContainer.innerHTML = emptyMsg;
       return;
     }
@@ -1019,6 +1179,7 @@
         </td>
         <td class="center">${item.chairman || '-'}</td>
         <td class="center" style="font-weight:600; color:#0f172a;">${item.inviter || '-'}</td>
+        <td class="center">${item.nextSpeaker || '-'}</td>
         <td class="action-cell center">
           <button type="button" class="btn-outline" style="padding:2px 6px; font-size:0.75rem;" onclick="editSchedule('${item.id}')">수정</button>
           <button type="button" class="btn-danger" style="padding:2px 6px; font-size:0.75rem;" onclick="clearScheduleContent('${item.id}')">삭제</button>
@@ -1043,6 +1204,7 @@
           <div style="display:flex; justify-content:space-between;">
             <span>초대자: <b>${item.inviter || '-'}</b></span>
             <span>사회자: <b>${item.chairman || '-'}</b></span>
+            <span>후대: <b>${item.nextSpeaker || '-'}</b></span>
           </div>
         </div>
         <div class="card-actions">
@@ -1088,6 +1250,7 @@
           inviter: "",
           chairman: "",
           reader: "",
+          nextSpeaker: "",
           notes: ""
         });
         addedCount++;
@@ -1121,6 +1284,7 @@
       inviter: document.getElementById("formInviter").value.trim(),
       chairman: document.getElementById("formChairman").value,
       reader: document.getElementById("formReader").value,
+      nextSpeaker: document.getElementById("formNextSpeaker").value.trim(),
       notes: document.getElementById("formNotes").value
     };
 
@@ -1165,6 +1329,7 @@
             inviter: "",
             chairman: "",
             reader: "",
+            nextSpeaker: "",
             notes: ""
           };
           await syncToCloud();
@@ -1205,6 +1370,7 @@
     document.getElementById("formInviter").value = item.inviter || "";
     document.getElementById("formChairman").value = item.chairman || "";
     document.getElementById("formReader").value = item.reader || "";
+    document.getElementById("formNextSpeaker").value = item.nextSpeaker || "";
     document.getElementById("formNotes").value = item.notes || "";
     document.getElementById("modalTitle").innerText = "강연 일정 수정";
     
@@ -1333,13 +1499,14 @@
         (item.talkTitle && item.talkTitle.toLowerCase().includes(q)) ||
         (item.speaker && item.speaker.toLowerCase().includes(q)) ||
         (item.congregation && item.congregation.toLowerCase().includes(q)) ||
-        (item.inviter && item.inviter.toLowerCase().includes(q));
+        (item.inviter && item.inviter.toLowerCase().includes(q)) ||
+        (item.nextSpeaker && item.nextSpeaker.toLowerCase().includes(q));
       return matchType && matchText;
     });
 
     if (filtered.length === 0) {
       const emptyMsg = `<div style="text-align:center; padding:30px; color:var(--text-muted);">조건에 일치하는 기록이 없습니다.</div>`;
-      tbody.innerHTML = `<tr><td colspan="8">${emptyMsg}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9">${emptyMsg}</td></tr>`;
       mContainer.innerHTML = emptyMsg;
       return;
     }
@@ -1358,6 +1525,7 @@
         <td class="center">${item.phone ? `<a href="tel:${item.phone}" style="color:var(--primary); text-decoration:none;">${item.phone}</a>` : '-'}</td>
         <td class="center">${item.chairman || '-'}</td>
         <td class="center">${item.inviter || '-'}</td>
+        <td class="center">${item.nextSpeaker || '-'}</td>
       `;
       tbody.appendChild(tr);
 
@@ -1375,6 +1543,7 @@
           <div style="display:flex; justify-content:space-between;">
             <span>초대자: <b>${item.inviter || '-'}</b></span>
             <span>사회자: <b>${item.chairman || '-'}</b></span>
+            <span>후대: <b>${item.nextSpeaker || '-'}</b></span>
           </div>
         </div>
       `;
