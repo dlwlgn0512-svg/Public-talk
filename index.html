@@ -168,7 +168,7 @@
     .talk-item:hover { background: #eff6ff; border-color: var(--primary); }
     .talk-no { font-weight: 700; color: var(--primary); min-width: 48px; }
 
-    /* 인쇄 최적화 (후대 열 추가 반영: 날짜 13%, 번호 7%, 연사 9%, 회중 10%, 연설주제 33%, 사회자 9%, 낭독자 9%, 후대 10%) */
+    /* 인쇄 최적화 */
     .print-only-container { display: none; }
 
     .print-header-box {
@@ -297,7 +297,7 @@
     <button type="button" class="tab-btn" onclick="switchTab('settingsTab', event)">⚙️ 백업 및 설정</button>
   </div>
 
-  <!-- A4 가로 인쇄 전용 영역 (후대 열 추가: 날짜 13%, 번호 7%, 연사 9%, 회중 10%, 주제 33%, 사회자 9%, 낭독자 9%, 후대 10%) -->
+  <!-- A4 가로 인쇄 전용 영역 -->
   <div class="print-only-container">
     <div class="print-header-box">
       <h2>회중 공개강연 계획표</h2>
@@ -466,7 +466,7 @@
     </div>
   </div>
 
-  <!-- 탭 4: 백업 및 설정 (요청하신 7일 주기 백업 및 원클릭 복원) -->
+  <!-- 탭 4: 백업 및 설정 -->
   <div id="settingsTab" class="tab-content" style="display:none;">
     <div class="card space-y-4">
       <h2 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 6px;">클라우드 자동 백업 및 복원 관리</h2>
@@ -631,7 +631,7 @@
 </div>
 
 <script>
-  // Firebase 초기화 및 기존 경로 유지 ([컬렉션명]/mainData)
+  // Firebase 초기화 및 올바른 경로(`sarangGroup/publicTalkSchedules`) 연결
   const firebaseConfig = {
     apiKey: "AIzaSyCdZlSMTeiZvmN_qn4Yqva06NE_NR7QB7I",
     authDomain: "love-d0dcf.firebaseapp.com",
@@ -646,8 +646,8 @@
   }
   const db = firebase.firestore();
   
-  // 기존 경로 유지
-  const MAIN_DOC = db.collection("sarangGroup").doc("mainData");
+  // 정확한 경로 연결
+  const MAIN_DOC = db.collection("sarangGroup").doc("publicTalkSchedules");
   const BACKUPS_COL = MAIN_DOC.collection("backups");
 
   const TALK_DB = {
@@ -727,7 +727,7 @@
   let schedules = [];
   let pickerTargetIsForm = false;
   let isFirstLoad = true;
-  let isServerSynced = false; // ★ 서버 동기화 완료 전 덮어쓰기 방지 잠금 변수
+  let isServerSynced = false; // 서버 동기화 완료 전 덮어쓰기 방지 잠금
   let currentGeneratedBlob = null;
   let currentGeneratedFilename = "";
 
@@ -758,7 +758,7 @@
     renderSchedules();
   }
 
-  // ★ 실시간 데이터 로드 및 7일 주기 자동 백업 체크 로직
+  // 실시간 데이터 로드 및 7일 주기 자동 백업 체크 (`sarangGroup/publicTalkSchedules`)
   MAIN_DOC.onSnapshot((docSnap) => {
     const syncStatusEl = document.getElementById("syncStatus");
     if (docSnap.exists) {
@@ -766,12 +766,10 @@
       schedules = data.items || [];
     } else {
       schedules = [];
-      // 최초 생성 시 덮어쓰기 방지 잠금 해제 후 초기화
       isServerSynced = true;
       MAIN_DOC.set({ items: [], updatedAt: new Date() }, { merge: true });
     }
 
-    // 서버 동기화 완료 플래그 설정 (이후부터 저장 허용)
     isServerSynced = true;
 
     if (syncStatusEl) {
@@ -783,7 +781,6 @@
     renderManagementView();
     filterHistory();
 
-    // 7일 주기 자동 백업 체크 수행
     checkAndRunWeeklyBackup();
 
     if (!isFirstLoad) {
@@ -799,17 +796,15 @@
     }
   });
 
-  // ★ { merge: true } 옵션을 사용하여 기존 데이터를 날리지 않고 병합 저장
   async function syncToCloud() {
     if (!isServerSynced) {
-      console.warn("서버 데이터가 아직 동기화되지 않아 저장이 차단되었습니다.");
+      console.warn("서버 동기화 전 저장 차단됨");
       return;
     }
     await MAIN_DOC.set({ items: schedules, updatedAt: new Date() }, { merge: true });
     showUpdateToast();
   }
 
-  // ★ 7일 주기 자동 백업 및 최근 10개 유지 로직
   async function checkAndRunWeeklyBackup() {
     try {
       const backupsSnap = await BACKUPS_COL.orderBy("timestamp", "desc").get();
@@ -821,7 +816,6 @@
         const latestTime = latestDoc.data().timestamp?.toMillis ? latestDoc.data().timestamp.toMillis() : new Date(latestDoc.data().dateStr).getTime();
         const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
         
-        // 7일이 경과하지 않았으면 자동 백업 생략
         if ((now - latestTime) < sevenDaysMs) {
           shouldBackup = false;
         }
@@ -831,7 +825,6 @@
         await executeBackup("자동 백업 (7일 주기)");
       }
 
-      // 백업 개수 10개 초과 시 오래된 것 삭제
       const updatedSnap = await BACKUPS_COL.orderBy("timestamp", "desc").get();
       if (updatedSnap.docs.length > 10) {
         for (let i = 10; i < updatedSnap.docs.length; i++) {
@@ -841,7 +834,7 @@
 
       renderBackupList();
     } catch (e) {
-      console.error("자동 백업 체크 중 오류 발생:", e);
+      console.error("자동 백업 체크 중 오류:", e);
     }
   }
 
@@ -859,13 +852,12 @@
   async function manualBackupNow() {
     try {
       await executeBackup("수동 백업");
-      alert("현재 데이터가 클라우드 백업(하위 backups)에 성공적으로 저장되었습니다.");
+      alert("현재 데이터가 클라우드 백업(backups)에 저장되었습니다.");
     } catch (e) {
-      alert("백업 중 오류가 발생했습니다: " + e.message);
+      alert("백업 실패: " + e.message);
     }
   }
 
-  // 설정 탭에 백업 목록 렌더링 및 원클릭 복원 기능
   async function renderBackupList() {
     const container = document.getElementById("backupListContainer");
     if (!container) return;
@@ -877,7 +869,7 @@
         return;
       }
 
-      let html = `<div style="display: flex; flexDirection: column; divide-y: 1px solid var(--border);">`;
+      let html = `<div style="display: flex; flex-direction: column;">`;
       snap.forEach(docSnap => {
         const d = docSnap.data();
         const count = d.items ? d.items.length : 0;
@@ -899,7 +891,7 @@
   }
 
   async function restoreFromBackup(backupId) {
-    if (confirm("정말 이 백업 시점으로 데이터를 복원하시겠습니까?\n현재 입력된 내용이 해당 백업 시점으로 되돌아갑니다.")) {
+    if (confirm("정말 이 백업 시점으로 데이터를 복원하시겠습니까?")) {
       try {
         const docRef = BACKUPS_COL.doc(backupId);
         const snap = await docRef.get();
@@ -913,7 +905,7 @@
           filterHistory();
         }
       } catch (e) {
-        alert("복원 중 오류가 발생했습니다: " + e.message);
+        alert("복원 실패: " + e.message);
       }
     }
   }
@@ -954,7 +946,7 @@
     });
   }
 
-  // 1. 연설 계획표 렌더링 (후대 열 포함)
+  // 1. 연설 계획표 렌더링 (후대 포함)
   function renderSchedules() {
     const tbody = document.getElementById("scheduleBody");
     const mobileContainer = document.getElementById("mobileCardsContainer");
